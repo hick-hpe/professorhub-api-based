@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Conta Ativada!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script>
+        // Redireciona automaticamente para o dashboard após 3 segundos
+        setTimeout(function() {
+            window.location.href = "{% url 'admin_dashboard' %}";
+        }, 3000);
+    </script>
+</head>
+<body class="bg-light">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card shadow-sm p-4 text-center" style="max-width: 500px; width: 100%;">
+            <div class="card-body">
+                <h1 class="card-title mb-3 text-success">Conta Ativada com Sucesso!</h1>
+                <div class="alert alert-success">
+                    Sua conta foi ativada. Você será redirecionado para o dashboard em instantes.
+                </div>
+                <p>Se não for redirecionado automaticamente, <a href="{% url 'admin_dashboard' %}">clique aqui</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+</body>
+</html>

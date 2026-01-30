@@ -1,0 +1,195 @@
+{% extends 'planner/base.html' %}
+{% load static %}
+
+{% block title %}Disciplinas - Ementas{% endblock %}
+
+{% block titlenavbar %}
+Disciplinas
+{% endblock %}
+
+{% block content %}
+<div class="container my-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'disciplinas' %}">Disciplinas</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ disciplina.nome }}</li>
+        </ol>
+    </nav>
+    
+    <div class="abas-disciplinas">
+        <div class="aba">
+            <a href="{% url 'disciplina_planos' disciplina.id %}" class="nav-link">
+                <span class="d-none d-sm-inline">Plano de Aula</span>
+                <span class="d-inline d-sm-none">Planos</span>
+            </a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_tarefas' disciplina.id %}" class="nav-link">Tarefas</a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_avaliacoes' disciplina.id %}" class="nav-link">Avaliações</a>
+        </div>
+        <div class="aba active">
+            <a href="{% url 'disciplina_ementas' disciplina.id %}" class="nav-link">Ementas</a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_objetivos' disciplina.id %}" class="nav-link">Objetivos</a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_configuracoes' disciplina.id %}" class="nav-link">Configurações</a>
+        </div>
+    </div>
+
+    {% for message in messages %}
+    <div class="mt-2 alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+        role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <!-- Progresso -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Progresso da Ementa</h5>
+            <div class="d-flex align-items-center gap-3">
+                <div class="progress flex-grow-1" style="height: 25px;">
+                    <div class="progress-bar bg-success" role="progressbar" 
+                         style="width: {{ percentual }}%;" 
+                         aria-valuenow="{{ percentual }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ percentual|floatformat:1 }}%
+                    </div>
+                </div>
+                <div>
+                    <strong>{{ ementas_abordadas }}/{{ total_ementas }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adicionar Ementa -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Adicionar Nova Ementa</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-10">
+                        <label for="{{ form.descricao.id_for_label }}" class="form-label">Descrição</label>
+                        {{ form.descricao }}
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-circle"></i> Adicionar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Ementas -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Lista de Ementas</h5>
+        </div>
+        <div class="card-body">
+            {% if ementas %}
+            <div class="list-group">
+                {% for ementa in ementas %}
+                <div class="list-group-item d-flex justify-content-between align-items-center {% if ementa.abordado %}list-group-item-success{% endif %}">
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        <form method="POST" action="{% url 'ementa_marcar_abordado' disciplina.id ementa.id %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm {% if ementa.abordado %}btn-success{% else %}btn-outline-secondary{% endif %}" 
+                                    title="{% if ementa.abordado %}Marcar como não abordado{% else %}Marcar como abordado{% endif %}">
+                                <i class="bi {% if ementa.abordado %}bi-check-circle-fill{% else %}bi-circle{% endif %}"></i>
+                            </button>
+                        </form>
+                        
+                        <span class="{% if ementa.abordado %}text-decoration-line-through{% endif %}">
+                            {{ ementa.descricao }}
+                        </span>
+                        
+                        {% if ementa.plano_aula %}
+                        <span class="badge bg-info">
+                            <i class="bi bi-calendar"></i> {{ ementa.plano_aula.data|date:"d/m/Y" }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editModal{{ ementa.id }}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteModal{{ ementa.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Editar -->
+                <div class="modal fade" id="editModal{{ ementa.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar Ementa</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="{% url 'ementa_editar' disciplina.id ementa.id %}">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Descrição</label>
+                                        <input type="text" class="form-control" name="descricao" value="{{ ementa.descricao }}" maxlength="255" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Excluir -->
+                <div class="modal fade" id="deleteModal{{ ementa.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmar Exclusão</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                Tem certeza que deseja excluir a ementa "{{ ementa.descricao }}"?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form method="POST" action="{% url 'ementa_excluir' disciplina.id ementa.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Nenhuma ementa cadastrada ainda. Adicione ementas acima para organizar o conteúdo da disciplina.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

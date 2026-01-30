@@ -1,0 +1,64 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProfessorHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/teacher/base.css' %}">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light py-3 shadow-sm sticky-top">
+    <div class="container-fluid px-5 d-flex justify-content-between align-items-center">
+
+      <!-- Logo à esquerda -->
+      <a class="navbar-brand fw-bold me-auto" href="/">ProfessorHub</a>
+
+      <!-- Botão do colapso (mobile) -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Itens do menu centralizados -->
+      <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#sobre">Sobre</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#recursos">Recursos</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#contato">Contato</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- Conteúdo -->
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-light text-center py-4 border-top">
+    <div class="container">
+      <p class="mb-2">&copy; 2025 ProfessorHub. Todos os direitos reservados.</p>
+      <p class="mb-0">
+        <a href="#home" class="text-decoration-none text-primary me-3">Home</a>
+        <a href="#sobre" class="text-decoration-none text-primary me-3">Sobre</a>
+        <a href="#recursos" class="text-decoration-none text-primary me-3">Recursos</a>
+        <a href="#contato" class="text-decoration-none text-primary">Contato</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+
+</html>

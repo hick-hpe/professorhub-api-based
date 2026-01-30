@@ -1,0 +1,181 @@
+body {
+    overflow: hidden;
+}
+
+/* Layout base */
+.container-fluid {
+    display: flex;
+    height: 100vh;
+}
+
+.content-page {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #ffffff;
+    width: 230px;
+    height: 100vh;
+    border-right: 1px solid #dee2e6;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Header da sidebar */
+.sidebar-header a {
+    color: #2c3e50;
+}
+
+/* Itens */
+.sidebar .list-group-item {
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    transition: 0.2s;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: #e9ecef;
+}
+
+/* Item ativo */
+.item-active {
+    background-color: #d0ebff !important;
+    font-weight: 500;
+}
+
+/* Botões */
+.btn-outline-danger {
+    border-width: 1px;
+}
+
+/* Ícones de controle */
+#menu-icon,
+#icon-close {
+    display: none;
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        z-index: 1000;
+        height: 100%;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    #menu-icon {
+        display: block;
+    }
+
+    #icon-close {
+        display: block;
+        top: 15px;
+        right: 15px;
+        cursor: pointer;
+    }
+}
+
+/* navbar */
+/* Navbar */
+.navbar {
+    background-color: #ffffff !important;
+}
+
+.navbar h5 {
+    color: #2c3e50;
+}
+
+/* Botão menu */
+#menu-icon {
+    transition: background-color 0.2s;
+}
+
+#menu-icon:hover {
+    background-color: #f1f3f5;
+    border-radius: 8px;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+.abas-disciplinas {
+    display: flex;
+}
+
+.aba {
+    background-color: #ccc;
+    padding: 10px 15px;
+    border-radius: 15px 15px 0 0;
+    cursor: pointer;
+}
+
+.aba:hover {
+    background-color: #eee;
+}
+
+.aba.active {
+    background-color: #fff;
+    box-shadow: 0 0 1px black;
+}
+
+.dropdown-item {
+    color: #343a40;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f3f5;
+}
+
+.dropdown-toggle::after {
+    margin-left: 0.4rem;
+}
+
+/* responsividade */
+@media screen and (max-width: 992px) {
+    .sidebar {
+        position: fixed;
+        left: -230px;
+        transition: left 0.3s ease;
+        background-color: #fff;
+        z-index: 999;
+    }
+
+    .content-page {
+        width: 100% !important;
+        position: absolute;
+        left: 0;
+        height: 100vh;
+    }
+
+    #menu-icon {
+        display: inline;
+    }
+
+    #icon-close {
+        display: inline;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 24px;
+    }
+
+    .sidebar-open .sidebar {
+        left: 0;
+        width: 100% !important;
+    }
+}

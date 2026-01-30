@@ -1,0 +1,29 @@
+{% extends "teacher/base.html" %}
+
+{% block content %}
+<div class="shadow p-4 rounded-3" style="width: clamp(350px, 400px, 500px);">
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+  {% endif %}
+
+  <form method="post" action="{% url 'recuperar_senha' %}">
+    <div class="mb-4 text-center position-relative">
+      <button onclick="history.back()" class="btn position-absolute start-0 top-50 translate-middle">
+        <i class="bi bi-chevron-left text-dark fs-4"></i>
+      </button>
+      <h4>Recuperação de senha</h4>
+    </div>
+
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="email" class="form-label">Digite seu email para receber o link de criar uma nova senha</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="exemplo@email.com"
+        required>
+    </div>
+
+      <button type="submit" class="btn text-white w-100 bg-primary">Enviar</button>
+  </form>
+</div>
+{% endblock %}

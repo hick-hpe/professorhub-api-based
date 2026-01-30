@@ -1,0 +1,184 @@
+{% extends 'planner/base.html' %}
+{% load static %}
+
+{% block title %}Disciplinas - Configurações{% endblock %}
+
+{% block titlenavbar %}
+Disciplinas
+{% endblock %}
+
+{% block content %}
+<input type="hidden" id="disciplina_id" value="{{ disciplina.id }}">
+
+<div class="container my-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'disciplinas' %}">Disciplinas</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ disciplina.nome }}</li>
+        </ol>
+    </nav>
+    <div class="abas-disciplinas">
+        <div class="aba">
+            <a href="{% url 'disciplina_planos' disciplina.id %}" class="nav-link">
+                <span class="d-none d-sm-inline">Plano de Aula</span>
+                <span class="d-inline d-sm-none">Planos</span>
+            </a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_tarefas' disciplina.id %}" class="nav-link">Tarefas</a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_avaliacoes' disciplina.id %}" class="nav-link">Avaliações</a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_ementas' disciplina.id %}" class="nav-link">Ementas</a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'disciplina_objetivos' disciplina.id %}" class="nav-link">Objetivos</a>
+        </div>
+        <div class="aba active">
+            <a href="{% url 'disciplina_configuracoes' disciplina.id %}" class="nav-link">Configurações</a>
+        </div>
+    </div>
+
+
+    <form class="mb-5 col-12 col-lg-7" id="form-edit">
+        {% csrf_token %}
+
+        {% for message in messages %}
+        <div class="mt-2 alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+            role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+
+        <div class="mb-3">
+            <label for="nome">Nome</label><br>
+            <input type="text" class="form-control" id="nome" name="nome" value="{{ disciplina.nome }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="carga_horaria">Carga horária</label><br>
+            <input type="number" class="form-control" id="carga_horaria" name="carga_horaria" value="{{ disciplina.carga_horaria }}" max="200" min="1">
+        </div>
+
+        <div class="mb-3">
+            <label for="objetivo">Objetivo</label><br>
+            <textarea class="form-control" id="objetivo" name="objetivo" rows="5"
+                style="resize: none;">{{ disciplina.objetivo }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="ementa">Ementa</label><br>
+            <textarea class="form-control" id="ementa" name="ementa" rows="5"
+                style="resize: none;">{{ disciplina.ementa }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Dias das aulas e quantidade de aulas por dia</label>
+            {% for dia, aula in dias %}
+            <div class="d-flex align-items-center gap-3 mt-2">
+                <div class="form-check col-4">
+                    <input class="form-check-input" type="checkbox" name="dias[]" value="{{ dia }}" id="{{ dia }}"
+                    {% if aula > 0 %}
+                        data-dia="{{ dia }}"
+                        checked
+                    {% endif %}>
+                    <label class="form-check-label" for="{{ dia }}">
+                        {{ dia|title }}
+                    </label>
+                </div>
+                <input type="number" class="form-control" name="aulas_{{ dia }}" placeholder="ex: 2"
+                    id="aulas_{{ dia }}" value="{{ aula }}" max="10" min="1"
+                    {% if aula > 0 %}
+                        data-aula="{{ aula }}"
+                    {% endif %}
+                    {% if aula == 0 %}
+                        disabled
+                    {% endif %} >
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <label for="periodo">Período</label>
+            <select class="form-select" name="periodo" id="periodo">
+                <option value selected disabled>Selecione o período</option>
+                {% if disciplina.periodo == 'semestral' %}
+                <option value="semestral" selected>Semestral</option>
+                {% else %}
+                <option value="semestral">Semestral</option>
+                {% endif %}
+
+                {% if disciplina.periodo == 'anual' %}
+                <option value="anual" selected>Anual</option>
+                {% else %}
+                <option value="anual">Anual</option>
+                {% endif %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="calendario">Calendário</label>
+            <input class="form-control" type="text" value="{{ disciplina.calendario }}" disabled readonly>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="button" id="btnExcluir" class="btn btn-danger" data-bs-toggle="modal"
+                data-bs-target="#exampleModal" data-disciplina-id="{{ disciplina.id }}"
+                data-disciplina-nome="{{ disciplina.nome }}">
+                Excluir
+            </button>
+            <button type="submit" class="btn btn-success" id="btnAtualizarDisciplina">Salvar</button>
+        </div>
+    </form>
+
+    <!-- modal excluir -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Excluir disciplina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Deseja excluir esta disciplina <strong id="disciplina_excluir"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="{% url 'disciplina_delete' disciplina.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" id="btnConfimarExcluir">Sim</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal confirmar mudança de planos -->
+<div class="modal fade" id="confirmarMudarPlano" tabindex="-1" aria-labelledby="confirmarMudarPlanoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarMudarPlanoLabel">Confirmar alterações</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                As configurações atuais podem alterar seus planos de aulas e acabar excluindo dados importantes. Deseja
+                continuar?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="salvarNoBanco()">Sim</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/disciplina_detail_configuracoes.js' %}"></script>
+{% endblock %}

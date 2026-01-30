@@ -1,0 +1,17 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+}
+
+main {
+    flex: 1;
+    /* Faz o conteúdo ocupar o espaço restante */
+    display: grid;
+    place-items: center;
+}

@@ -1,0 +1,113 @@
+{% extends 'planner/base.html' %}
+{% load static %}
+
+{% block title %}Calendários{% endblock %}
+
+{% block titlenavbar %}
+Calendários
+{% endblock %}
+
+{% block content %}
+<div class="container my-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a
+                    href="{% url 'calendarios' %}">Calendários</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ calendario.nome }}</li>
+        </ol>
+    </nav>
+
+    <div class="abas-disciplinas">
+        <div class="aba active">
+            <a href="#"
+                class="nav-link">Dados Calendário</a>
+        </div>
+        <div class="aba">
+            <a href="{% url 'calendario_datas_importantes' calendario.id %}"
+                class="nav-link">Datas Importantes</a>
+        </div>
+    </div>
+
+    <form id="form_edit_calendario" action="{% url 'calendario_detail' calendario.id %}" class="col-12 col-lg-8 p-3 shadow" method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_delete_calendario">
+                Excluir
+            </button>
+            <button class="btn btn-success">Salvar</button>
+        </div>
+        </div>
+    </form>
+
+<!-- criar -->
+<div class="modal fade" id="exampleModal" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        Adicionar Data
+                    </h5>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'calendario_datas_importantes' calendario.id %}" method="post">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="calendario" value="{{ calendario.id }}">
+
+                        {% for field in form_data %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+
+                                {% if field.errors %}
+                                    <div class="text-danger">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- excluir calendario -->
+<div class="modal fade" id="modal_delete_calendario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-id-calendario="{{ calendario.id }}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Excluir data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Tem certeza que deseja excluir este calendário?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form action="{% url 'calendario_delete' calendario.id %}" method="post">
+            {% csrf_token%}
+            <button type="submit" class="btn btn-danger">Excluir</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

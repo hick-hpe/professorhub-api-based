@@ -1,0 +1,219 @@
+{% extends 'planner/base.html' %}
+{% load static %}
+
+{% block title %}Calendários{% endblock %}
+
+{% block titlenavbar %}
+Calendários
+{% endblock %}
+
+{% block content %}
+<div class="container my-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a
+                    href="{% url 'calendarios' %}">Calendários</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ calendario.nome }}</li>
+        </ol>
+    </nav>
+
+    <div class="abas-disciplinas">
+        <div class="aba">
+            <a href="{% url 'calendario_detail' calendario.id %}"
+                class="nav-link">Dados Calendário</a>
+        </div>
+        <div class="aba active">
+            <a href="#"
+                class="nav-link">Datas Importantes</a>
+        </div>
+    </div>
+
+    <div class="my-2">
+        <input type="text" class="form-control flex-grow-1"
+            id="exampleInputEmail1"
+            aria-describedby="emailHelp" placeholder="Pesquisar datas">
+    </div>
+    <div class="mb-3">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+            data-bs-target="#exampleModal">
+            <i class="bi bi-plus-lg"></i> Adicionar Data
+        </button>
+    </div>
+
+    <div class="table-responsive mt-3 shadow-sm rounded">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-primary text-center align-middle">
+                <tr>
+                    <th scope="col" class="text-start ps-3">Data</th>
+                    <th scope="col" class="text-start">Detalhes</th>
+                    <th scope="col">Letivo</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="align-middle">
+                {% for data in datas %}
+                <tr>
+                    <!-- Data -->
+                    <td class="text-start ps-3">{{ data.data|date:'d/m/Y' }}</td>
+    
+                    <!-- Detalhes -->
+                    <td class="text-start">{{ data.detalhes|default:'Sem detalhes' }}</td>
+    
+                    <!-- Letivo -->
+                    <td class="text-center">
+                        {% if data.dia_letivo %}
+                            <span class="badge bg-success">Sim</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Não</span>
+                        {% endif %}
+                    </td>
+    
+                    <!-- Ações -->
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <!-- Editar -->
+                            <button 
+                                type="button" 
+                                class="btn btn-outline-warning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal_edit"
+                                data-id-calendario="{{ calendario.id }}"
+                                data-id="{{ data.id }}"
+                                data-data="{{ data.data|date:'Y-m-d' }}"
+                                data-detalhes="{{ data.detalhes }}"
+                                data-dia-letivo="{{ data.dia_letivo }}"
+                                title="Editar data"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </button>
+    
+                            <!-- Excluir -->
+                            <button
+                                type="button" 
+                                class="btn btn-outline-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal_delete"
+                                data-id="{{ data.id }}"
+                                data-id-calendario="{{ calendario.id }}"
+                                data-data="{{ data.data|date:'Y-m-d' }}"
+                                title="Excluir data"
+                            >
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="bi bi-calendar-x"></i><br>
+                        Nenhuma data cadastrada
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+
+<!-- criar -->
+<div class="modal fade" id="exampleModal" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        Adicionar Data
+                    </h5>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="" action="{% url 'calendario_datas_importantes' calendario.id %}" method="post">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="calendario" value="{{ calendario.id }}">
+
+                        {% for field in form %}
+                            {% if field.name != 'calendario' %}
+                                <div class="mb-3">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+
+                                    {% for error in field.errors %}
+                                        <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- editar -->
+<div class="modal fade" id="modal_edit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form_edit" method="post">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="calendario" value="{{ calendario.id }}">
+
+                    <div class="mb-3">
+                        <label for="edit_data">Data</label>
+                        <input type="date" name="data" id="edit_data" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_detalhes">Detalhes</label>
+                        <input type="text" name="detalhes" id="edit_detalhes" class="form-control">
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="dia_letivo" id="edit_dia_letivo">
+                        <label class="form-check-label" for="edit_dia_letivo">Dia letivo</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- excluir dia -->
+<div class="modal fade" id="modal_delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Excluir data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Tem certeza que deseja excluir <strong id="data_modal_delete"></strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form id="form_delete" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Excluir</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/calendario_datas_importantes.js' %}"></script>
+{% endblock %}

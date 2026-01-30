@@ -1,0 +1,123 @@
+/* ====== Layout geral ====== */
+body {
+    background-color: #f8f9fb;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ====== Cards ====== */
+.card {
+    border: none;
+    border-radius: 15px;
+    background-color: #fff;
+    /* transition: transform 0.2s ease, box-shadow 0.2s ease; */
+}
+
+.card:hover {
+    /* transform: translateY(-4px); */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.card-title {
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ====== Botão "Hoje" ====== */
+#btn-hoje {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+#btn-hoje:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* ====== Seletores ====== */
+.form-select {
+    border-radius: 8px;
+    border-color: #ced4da;
+    transition: all 0.2s ease;
+}
+
+.form-select:hover,
+.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
+}
+
+/* ====== Calendário ====== */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th {
+    background-color: #007bff !important;
+    color: white;
+    font-weight: 600;
+}
+
+.table td {
+    height: 85px;
+    vertical-align: top;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.table td:hover {
+    background-color: #e9f2ff;
+}
+
+/* ====== Dias e Eventos ====== */
+.dia-calendario {
+    position: relative;
+}
+
+.eventos .evento {
+    width: 8px;
+    height: 8px;
+    background-color: #007bff;
+    border-radius: 50%;
+}
+
+/* ====== Coluna "Eventos" ====== */
+.card-eventos {
+    background: linear-gradient(145deg, #ffffff, #f3f6fb);
+    border: 1px solid #e5e9f2;
+}
+
+#eventosTarefas {
+    list-style: none;
+    padding: 0;
+}
+
+#eventosTarefas li {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+#eventosTarefas li:hover {
+    background-color: #e9f2ff;
+    transform: translateX(3px);
+}
+
+.dia-calendario {
+    /* max-width: 80px !important; */
+    width: 50px !important;
+}
+
+.dia-calendario:hover {
+    background-color: #dbdcdd !important;
+}
+

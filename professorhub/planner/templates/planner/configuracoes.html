@@ -1,0 +1,92 @@
+{% extends "planner/base.html" %}
+
+{% block titlenavbar %}
+Configurações
+{% endblock %}
+
+{% block content %}
+<div class="p-4">
+    <h4 class="mb-4">
+        <button class="btn fs-3" onclick="location.href = {% url 'admin_dashboard' %}"><i class="bi bi-chevron-left"></i></button> Configurações da Conta
+    </h4>
+
+    <form method="post" action="{% url 'configuracoes' %}">
+        {% csrf_token %}
+        
+        <!-- Nome de usuário -->
+        <div class="mb-3">
+            <label for="username" class="form-label">Nome de usuário</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ request.user.username }}">
+            {% if erro_user %}
+            <small class="text-danger">Este nome de usuário já existe!!!</small>
+            {% endif %}
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ request.user.email }}">
+            {% if erro_email %}
+            <small class="text-danger">Este endereço de email já está cadastrado!!!</small>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-4">Salvar alterações</button>
+    </form>
+
+    <hr>
+
+    <h5 class="mb-3">Preferências</h5>
+
+    <!-- Tema -->
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" id="darkModeToggle" disabled>
+        <label class="form-check-label" for="darkModeToggle">Modo Escuro (em breve)</label>
+    </div>
+
+    <!-- Idioma -->
+    <div class="mb-3">
+        <label for="idioma" class="form-label">Idioma</label>
+        <select class="form-select" id="idioma" disabled>
+            <option selected>Português</option>
+            <option>Inglês</option>
+        </select>
+    </div>
+
+    <hr>
+
+    <h5 class="mb-3">Segurança</h5>
+    <a href="{% url 'recuperar_senha' %}" class="btn btn-primary">Alterar Senha</a>
+
+    <hr>
+
+    <h5 class="mb-3">Excluir Conta</h5>
+    <!-- Botão que ativa o modal -->
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluirConta">
+        Excluir Conta
+    </button>
+
+    <!-- Modal de confirmação -->
+    <div class="modal fade" id="modalExcluirConta" tabindex="-1" aria-labelledby="modalExcluirContaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="{% url 'configuracoes_delete' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalExcluirContaLabel">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        Tem certeza de que deseja excluir sua conta? Esta ação não poderá ser desfeita.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir Conta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

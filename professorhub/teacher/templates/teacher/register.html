@@ -1,0 +1,51 @@
+{% extends "teacher/base.html" %}
+
+{% block content %}
+<div class="shadow p-4 rounded-3" style="width: clamp(350px, 400px, 500px);">
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <form method="post" action="{% url 'submit_register' %}">
+    <div class="mb-2 text-center">
+      <h2>Cadastro</h2>
+    </div>
+
+    {% csrf_token %}
+    <div class="mb-2">
+      <label for="registerName" class="form-label">Nome</label>
+      <input type="text" class="form-control" id="registerName" placeholder="Digite seu nome" name="registerName"
+        required>
+    </div>
+
+    <div class="mb-2">
+      <label for="registerEmail" class="form-label">Email</label>
+      <input type="email" class="form-control" id="registerEmail" name="registerEmail" placeholder="exemplo@email.com"
+        required>
+    </div>
+
+    <div class="mb-2">
+      <label for="registerPassword" class="form-label">Senha</label>
+      <input type="password" class="form-control" id="registerPassword" name="registerPassword"
+        placeholder="Digite sua senha" required>
+    </div>
+
+    <div class="mb-2">
+      <label for="confirmPassword" class="form-label">Confirme sua senha</label>
+      <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+        placeholder="Confirme sua senha" required>
+    </div>
+
+    <div class="mb-2 fs-6">
+      <a href="{% url 'submit_login' %}">Já tem uma conta? Faça login</a>
+    </div>
+
+    <button type="submit" class="btn text-white w-100 bg-primary">Cadastrar</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "teacher/base.html" %}
+
+{% block content %}
+<div class="shadow p-4 rounded-3" style="width: clamp(350px, 400px, 500px);">
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<form method="post" action="{% url 'redefinir_senha' %}">
+  <div class="mb-4 text-center">
+    <h4>Redefinir senha</h4>
+  </div>
+
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="senha" class="form-label">Senha</label>
+    <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite sua senha" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="confirm_senha" class="form-label">Confirme sua senha</label>
+    <input type="password" class="form-control" id="confirm_senha" name="confirm_senha" placeholder="Confirme sua senha" required>
+  </div>
+
+  <button type="submit" class="btn text-white w-100 bg-primary">Enviar</button>
+</form>
+</div>
+{% endblock %}
