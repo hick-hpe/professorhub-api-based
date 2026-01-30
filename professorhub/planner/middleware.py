@@ -32,7 +32,6 @@ class ContaAtivadaMiddleware:
             return self.get_response(request)
 
         if any(request.path.startswith(r) for r in rotas_livres):
-            print('ok')
             return self.get_response(request)
 
         # Se usuário não está autenticado, deixa seguir

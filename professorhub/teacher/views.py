@@ -78,7 +78,11 @@ def submit_register(request):
                     login(request, user)
                     Professor.objects.create(user=user)
 
-                    enviar_email_para_ativar_conta(request)
+                    try:
+                        enviar_email_para_ativar_conta(request)
+                    except Exception as e:
+                        print('Erro ao tentar enviar email de ativação de conta!!!')
+                        print(e)
                     
                     print('Email enviado!!!')
 
@@ -131,6 +135,8 @@ def conta_ativada_view(request):
     try:
         token_obj = TokenAtivacaoConta.objects.get(token=token)
         print("Token encontrado no banco:", token_obj)
+
+        # tratar expiração do token
     except TokenAtivacaoConta.DoesNotExist:
         print("Token não encontrado.")
         return HttpResponse("Token inválido ou expirado.", status=400)
@@ -298,7 +304,8 @@ def recuperar_senha_view(request):
 
     return render(request, 'teacher/recuperar-senha.html')
 
-def validar_codigo_view(request):
+
+def validar_codigo_recuperacao_senha_view(request):
     # validar o código para permitir redefinição de senha
     if request.method == 'POST':
         email = request.COOKIES.get('email')

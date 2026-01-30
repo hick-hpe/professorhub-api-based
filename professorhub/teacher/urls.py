@@ -10,7 +10,7 @@ urlpatterns = [
     path('reenviar-email/', views.reenviar_email_verificacao, name='reenviar_email_verificacao'),
     path('conta-ativada/', views.conta_ativada_view, name='conta_ativada_view'),
     path('recuperar-senha/', views.recuperar_senha_view, name='recuperar_senha'),
-    path('validar-codigo/', views.validar_codigo_view, name='validar_codigo'),
+    path('validar-codigo/', views.validar_codigo_recuperacao_senha_view, name='validar_codigo'),
     path('redefinir-senha/', views.redefinir_senha_view, name='redefinir_senha'),
     path("enviar-contato/", views.enviar_email_form_contato, name="enviar_email_form_contato"),
 ]

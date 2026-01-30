@@ -14,7 +14,11 @@ class TokenAtivacaoConta(models.Model):
     email = models.CharField(max_length=64, unique=True, blank=True)
     token = models.CharField(max_length=64, unique=True)
     criado_em = models.DateTimeField(auto_now_add=True)
-    expiracao = models.DateTimeField(null=True, blank=True)
+
+    def codigo_expirou(self):
+        tempo_limite = timedelta(minutes=3)
+        agora = timezone.now()
+        return agora - self.criado_em > tempo_limite
 
     def __str__(self):
         return f'{self.email} - {self.token}'
