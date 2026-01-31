@@ -16,8 +16,7 @@ class TokenAtivacaoConta(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
     def codigo_expirou(self):
-        # tempo_limite = timedelta(minutes=3)
-        tempo_limite = timedelta(minutes=1)
+        tempo_limite = timedelta(minutes=3)
         agora = timezone.now()
         return agora - self.criado_em > tempo_limite
 
@@ -55,6 +54,16 @@ class DataImportante(models.Model):
 
     def __str__(self):
         return f"{self.data} - {self.detalhes}"
+
+class PeriodoImportante(models.Model):
+    calendario = models.ForeignKey(CalendarioLetivo, on_delete=models.CASCADE, related_name='periodos')
+    data_inicio = models.DateField()
+    data_fim = models.DateField()
+    detalhes = models.CharField(max_length=255, default='')
+    eh_letivo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.data_inicio} a {self.data_fim} - {self.detalhes}"
 
 class Disciplina(models.Model):
     PERIODO = [

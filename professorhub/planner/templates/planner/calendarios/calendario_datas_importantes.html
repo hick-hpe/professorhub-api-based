@@ -35,8 +35,12 @@ Calendários
     </div>
     <div class="mb-3">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-            data-bs-target="#exampleModal">
+            data-bs-target="#criarData">
             <i class="bi bi-plus-lg"></i> Adicionar Data
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+            data-bs-target="#criarPeriodo">
+            <i class="bi bi-plus-lg"></i> Adicionar Período
         </button>
     </div>
 
@@ -116,13 +120,13 @@ Calendários
     </div>
     
 
-<!-- criar -->
-<div class="modal fade" id="exampleModal" tabindex="-1"
-        aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- criar data -->
+<div class="modal fade" id="criarData" tabindex="-1"
+        aria-labelledby="criarDataLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
+                    <h5 class="modal-title" id="criarDataLabel">
                         Adicionar Data
                     </h5>
                     <button type="button" class="btn-close"
@@ -135,6 +139,44 @@ Calendários
                         <input type="hidden" name="calendario" value="{{ calendario.id }}">
 
                         {% for field in form %}
+                            {% if field.name != 'calendario' %}
+                                <div class="mb-3">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+
+                                    {% for error in field.errors %}
+                                        <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- criar periodo -->
+<div class="modal fade" id="criarPeriodo" tabindex="-1"
+        aria-labelledby="criarPeriodoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="criarPeriodoLabel">
+                        Adicionar Período
+                    </h5>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- <form id="" action="{% url 'calendario_datas_importantes' calendario.id %}" method="post"> -->
+                    <form id="" action="#" method="post">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="calendario" value="{{ calendario.id }}">
+
+                        {% for field in periodo_form %}
                             {% if field.name != 'calendario' %}
                                 <div class="mb-3">
                                     {{ field.label_tag }}
@@ -188,7 +230,6 @@ Calendários
         </div>
     </div>
 </div>
-
 
 
 <!-- excluir dia -->

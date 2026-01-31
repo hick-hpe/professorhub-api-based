@@ -79,6 +79,57 @@ class DataImportanteForm(forms.ModelForm):
         return cleaned_data
 
 
+class PeriodoImportanteForm(forms.ModelForm):
+    detalhes = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Detalhes do período',
+        }),
+    )
+
+    class Meta:
+        model = PeriodoImportante
+        fields = ['data_inicio', 'data_fim', 'calendario', 'detalhes', 'eh_letivo']
+        labels = {
+            'eh_letivo': 'É período letivo?'
+        }
+        widgets = {
+            'data_inicio': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'data_fim': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'eh_letivo': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['eh_letivo'].initial = False
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        data_inicio = cleaned_data.get('data_inicio')
+        data_fim = cleaned_data.get('data_fim')
+        calendario = cleaned_data.get('calendario')
+
+        if data_inicio and data_fim and data_inicio > data_fim:
+            self.add_error('data_fim', "A data final deve ser maior ou igual à data de início.")
+        
+        if calendario and data_inicio and data_fim:
+            if not (calendario.data_inicio <= data_inicio <= calendario.data_fim):
+                self.add_error('data_inicio', 'A data de início deve estar dentro do intervalo do calendário letivo.')
+            if not (calendario.data_inicio <= data_fim <= calendario.data_fim):
+                self.add_error('data_fim', 'A data final deve estar dentro do intervalo do calendário letivo.')
+        
+        return cleaned_data
+
+
 class DisciplinaForm(forms.ModelForm):
     CHOICE_PERIODOS = (
         ('semestral', 'Semestral'),

@@ -868,6 +868,7 @@ def calendario_datas_importantes(request, id):
     return render(request, 'planner/calendarios/calendario_datas_importantes.html', {
         'calendario': calendario,
         'form': DataImportanteForm(),
+        'periodo_form': PeriodoImportanteForm(),
         'datas': calendario.datas.all().order_by('data')
     })
         
