@@ -62,7 +62,7 @@ class DataImportanteForm(forms.ModelForm):
     
     def clean(self):
         cleaned_data = super().clean()
-        print('cleaned_data:', cleaned_data)
+        # print('cleaned_data:', cleaned_data)
         data = cleaned_data.get('data')
         calendario = cleaned_data.get('calendario')
 

@@ -862,6 +862,7 @@ def calendario_datas_importantes(request, id):
             return render(request, 'planner/calendarios/calendario_datas_importantes.html', {
                 'calendario': calendario,
                 'form': form,
+                'periodos': calendario.periodos.all().order_by('data_inicio'),
                 'datas': calendario.datas.all().order_by('data')
             })
         
@@ -869,7 +870,40 @@ def calendario_datas_importantes(request, id):
         'calendario': calendario,
         'form': DataImportanteForm(),
         'periodo_form': PeriodoImportanteForm(),
-        'datas': calendario.datas.all().order_by('data')
+        'datas': calendario.datas.all().order_by('data'),
+        'periodos': calendario.periodos.all().order_by('data_inicio')
+    })
+
+# CRUD Periodos Importantes: GET/POST
+@login_required(login_url='/login/')
+def calendario_periodos_importantes(request, id):
+    calendario = get_object_or_404(CalendarioLetivo, id=id, user=request.user)
+
+    if request.method == 'POST':
+        print('ta vindo aqui????')
+        form = PeriodoImportanteForm(request.POST)
+
+        if form.is_valid():
+            periodo_importante = form.save(commit=False)
+            periodo_importante.calendario = calendario
+            periodo_importante.save()
+            return redirect('calendario_datas_importantes', id=id)
+        
+        else:
+            messages.error(request, 'As datas não estão no intervalo do calendário')
+            return render(request, 'planner/calendarios/calendario_datas_importantes.html', {
+                'calendario': calendario,
+                'form': DataImportanteForm(),
+                'periodos': calendario.periodos.all().order_by('data_inicio'),
+                'datas': calendario.datas.all().order_by('data')
+            })
+        
+    return render(request, 'planner/calendarios/calendario_datas_importantes.html', {
+        'calendario': calendario,
+        'form': DataImportanteForm(),
+        'periodo_form': PeriodoImportanteForm(),
+        'datas': calendario.datas.all().order_by('data'),
+        'periodos': calendario.periodos.all().order_by('data_inicio')
     })
         
 # CRUD Datas Importantes: GET/PUT
@@ -1293,19 +1327,19 @@ def calcular_datas_aulas(calendario, carga_horaria, dias_aulas, data_inicial, da
             # TODO: arrumar isso depois para períodos
             # ===============================================
             # obter os períodos não letivos
-            # periodos_nao_letivos = calendario.periodos.filter(calendario=calendario, eh_letivo=False)
+            periodos_nao_letivos = calendario.periodos.filter(calendario=calendario, eh_letivo=False)
             
-            # # obter os dias nesses intervalos
-            # dias_temp = set()
-            # for periodo in periodos_nao_letivos:
-            #     di = periodo.data_inicio
-            #     df = periodo.data_fim
-            #     while di <= df:
-            #         dias_temp.add(di)
-            #         di += timedelta(days=1)
+            # obter os dias nesses intervalos
+            dias_temp = set()
+            for periodo in periodos_nao_letivos:
+                di = periodo.data_inicio
+                df = periodo.data_fim
+                while di <= df:
+                    dias_temp.add(di)
+                    di += timedelta(days=1)
 
-            # # e juntar tudo
-            # dias_nao_letivos = dias_nao_letivos.union(dias_temp)
+            # e juntar tudo
+            dias_nao_letivos = dias_nao_letivos.union(dias_temp)
                                                               
         except Exception as e:
             print(f'Erro ao buscar dias não letivos: {str(e)}')

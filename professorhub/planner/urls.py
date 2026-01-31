@@ -72,4 +72,7 @@ urlpatterns = [
     path('calendarios/<int:id>/datas-importantes/<int:data_id>/delete/', calendario_datas_importantes_delete, name='calendario_datas_importantes_delete'),
     path('calendarios/<int:id>/datas-importantes/<int:data_id>/', calendario_datas_importantes_detail, name='calendario_datas_importantes_detail'),
     path('calendarios/<int:id>/datas-importantes/', calendario_datas_importantes, name='calendario_datas_importantes'),
+
+    # períodos importantes
+    path('calendarios/<int:id>/periodos-importantes/', calendario_periodos_importantes, name='calendario_periodos_importantes'),
 ]

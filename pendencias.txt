@@ -1,17 +1,7 @@
-Disciplina:
-    - css das tabs (planos, tarefas, avaliacoes, configuracoes)
-    - dividir o campo "ementa" em campos "conteudos" (para visualizar quanto do conteudo foi abordado)
-    - linkar com o plano de aula - marcar quais ja foram
-    - mostrar quanto falta (agora/total, faltam X aulas) -> melhorar mensagem
-    - swap entre as aulas (aula A por aula B e vice-versa)
-    - duplicar as aulas (intermediaria, atualizar as datas, insert)
-
-Dashboard
-    - no calendario, exibir as aulas cadastradas, semelhante as tarefas (com o status, cor, etc)
-    - exibir as datas importantes
-
 Calendario
     - periodos
+        - editar
+        - excluir
     - sobreposicao de periodos/datas
         - regras de prioridade, etc
         - datas importantes
