@@ -5,4 +5,6 @@ Calendario
     - sobreposicao de periodos/datas
         - regras de prioridade, etc
         - datas importantes
+    - atualizar planos de aulas, quando calendario for atualizado
+        - seja periodo ou datas
 
