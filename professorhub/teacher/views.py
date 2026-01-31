@@ -56,7 +56,12 @@ def submit_register(request):
             if pwd != confirm_pwd:
                 messages.error(request, "As senhas não coindizem")
                 return redirect('submit_register')
-            
+
+            # minimo de caracteres na senha
+            if len(pwd) < 8:
+                messages.error(request, "A senha deve ter no mínimo 8 caracteres.")
+                return redirect('submit_register')
+
             try:
                 # Cria o novo usuário
                 user = User.objects.create_user(
@@ -135,11 +140,31 @@ def conta_ativada_view(request):
     try:
         token_obj = TokenAtivacaoConta.objects.get(token=token)
         print("Token encontrado no banco:", token_obj)
-
-        # tratar expiração do token
     except TokenAtivacaoConta.DoesNotExist:
         print("Token não encontrado.")
         return HttpResponse("Token inválido ou expirado.", status=400)
+    
+    # tratar expiração/desativação do token
+    if token_obj.codigo_expirou():
+        # obter o email do token expirado
+        email = token_obj.email
+
+        # apagar token expirado
+        token_obj.delete()
+        print("Token expirado e deletado.")
+
+        # gerar novo token
+        novo_token = secrets.token_hex(32)
+        TokenAtivacaoConta.objects.create(
+            email=email,
+            token=novo_token,
+        )
+        print("Novo token gerado:", novo_token)
+
+        # informa que o token expirou
+        return render(request, "teacher/token_expirado.html", {
+            "email": token_obj.email
+        })
 
     # buscar o usuário associado
     email = token_obj.email

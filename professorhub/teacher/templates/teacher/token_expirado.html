@@ -1,0 +1,21 @@
+{% extends 'teacher/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm p-2" style="max-width: 500px; width: 100%;">
+    <div class="card-body text-center">
+        <h1 class="card-title mb-3">Link expirado</h1>
+
+        <div class="alert alert-info">
+            O link de ativação associado ao email <strong>{{ email }}</strong> expirou por motivos de segurança.
+        </div>
+
+        <!-- Botão para reenviar o e-mail -->
+        <form action="{% url 'reenviar_email_verificacao' %}" method="post" class="mb-1">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary w-100">Reenviar e-mail</button>
+        </form>
+
+        <a href="{% url 'index' %}" class="btn btn-secondary w-100">Voltar à página inicial</a>
+    </div>
+</div>
+{% endblock %}

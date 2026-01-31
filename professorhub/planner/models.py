@@ -16,7 +16,8 @@ class TokenAtivacaoConta(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
     def codigo_expirou(self):
-        tempo_limite = timedelta(minutes=3)
+        # tempo_limite = timedelta(minutes=3)
+        tempo_limite = timedelta(minutes=1)
         agora = timezone.now()
         return agora - self.criado_em > tempo_limite
 
