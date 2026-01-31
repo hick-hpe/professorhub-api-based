@@ -1283,10 +1283,30 @@ def calcular_datas_aulas(calendario, carga_horaria, dias_aulas, data_inicial, da
             raise ValueError('Data inicial não pode ser maior que data final.')
 
         try:
+            # obter os objetos 'DataImportante' que são dias não letivos
             dias_nao_letivos = set(
                 DataImportante.objects.filter(calendario=calendario, dia_letivo=False)
                 .values_list("data", flat=True)
             )
+            
+            # ===============================================
+            # TODO: arrumar isso depois para períodos
+            # ===============================================
+            # obter os períodos não letivos
+            # periodos_nao_letivos = calendario.periodos.filter(calendario=calendario, eh_letivo=False)
+            
+            # # obter os dias nesses intervalos
+            # dias_temp = set()
+            # for periodo in periodos_nao_letivos:
+            #     di = periodo.data_inicio
+            #     df = periodo.data_fim
+            #     while di <= df:
+            #         dias_temp.add(di)
+            #         di += timedelta(days=1)
+
+            # # e juntar tudo
+            # dias_nao_letivos = dias_nao_letivos.union(dias_temp)
+                                                              
         except Exception as e:
             print(f'Erro ao buscar dias não letivos: {str(e)}')
             dias_nao_letivos = set()  # Continua sem os dias não letivos se houver erro

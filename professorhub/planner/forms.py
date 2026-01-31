@@ -66,9 +66,6 @@ class DataImportanteForm(forms.ModelForm):
         data = cleaned_data.get('data')
         calendario = cleaned_data.get('calendario')
 
-        # if calendario.data_inicio and calendario.data_fim and calendario.data_inicio > calendario.data_fim:
-        #     self.add_error(None, "A data de início deve ser menor que a data de fim.")
-        
         if calendario and data:
             print("calendario:", calendario)
             if not (calendario.data_inicio <= data <= calendario.data_fim):
