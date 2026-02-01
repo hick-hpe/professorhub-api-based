@@ -87,9 +87,11 @@ class PeriodoImportanteForm(forms.ModelForm):
 
     class Meta:
         model = PeriodoImportante
-        fields = ['data_inicio', 'data_fim', 'detalhes', 'eh_letivo']
+        fields = ['detalhes', 'data_inicio', 'data_fim', 'eh_letivo', 'calendario']
         labels = {
-            'eh_letivo': 'É período letivo?'
+            'eh_letivo': 'É período letivo?',
+            'data_inicio': 'Data de Início',
+            'data_fim': 'Data Final',
         }
         widgets = {
             'data_inicio': forms.DateInput(attrs={
@@ -109,6 +111,7 @@ class PeriodoImportanteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['eh_letivo'].initial = False
     
+    # validação no model?? 
     def clean(self):
         cleaned_data = super().clean()
         data_inicio = cleaned_data.get('data_inicio')
@@ -124,6 +127,21 @@ class PeriodoImportanteForm(forms.ModelForm):
             if not (calendario.data_inicio <= data_fim <= calendario.data_fim):
                 self.add_error('data_fim', 'A data final deve estar dentro do intervalo do calendário letivo.')
         
+        if data_fim and data_inicio and data_fim < data_inicio:
+            self.add_error('data_fim', "A data final não pode ser anterior à data de início.")
+        
+        # sobreposição de períodos no mesmo calendário
+        periodos_existentes = PeriodoImportante.objects.filter(calendario=calendario)
+        for periodo in periodos_existentes:
+            if (data_inicio <= periodo.data_fim and data_fim >= periodo.data_inicio):
+                # nome do perido sobreposto
+                self.add_error(
+                    None,
+                    f"O período informado sobrepõe-se ao período '{periodo.detalhes}', "
+                    f"que ocorre de {periodo.data_inicio.strftime('%d/%m/%Y')} "
+                    f"a {periodo.data_fim.strftime('%d/%m/%Y')}."
+                )
+
         return cleaned_data
 
 

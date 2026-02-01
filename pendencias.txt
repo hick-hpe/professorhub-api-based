@@ -1,10 +1,8 @@
 Calendario
     - periodos
-        - editar
-        - excluir
-    - sobreposicao de periodos/datas
-        - regras de prioridade, etc
-        - datas importantes
+        - editar OK
+        - excluir OK
+    - validar sobreposicao de periodos/datas OK
     - atualizar planos de aulas, quando calendario for atualizado
         - seja periodo ou datas
 

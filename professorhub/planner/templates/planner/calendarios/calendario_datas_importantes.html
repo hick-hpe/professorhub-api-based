@@ -201,11 +201,19 @@ Calendários
                 </div>
                 <div class="modal-body">
                     <form id="" action="{% url 'calendario_periodos_importantes' calendario.id %}" method="post">
-                    <!-- <form id="" action="#" method="post"> -->
                         {% csrf_token %}
 
                         <input type="hidden" name="calendario" value="{{ calendario.id }}">
 
+                        <!-- for erros -->
+                        {% if periodo_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in periodo_form.non_field_errors %}
+                            <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                         
                         {% for field in periodo_form %}
                         {% if field.name != 'calendario' %}
                         <div class="mb-3">

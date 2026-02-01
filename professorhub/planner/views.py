@@ -911,7 +911,6 @@ def calendario_periodos_importantes(request, id):
     calendario = get_object_or_404(CalendarioLetivo, id=id, user=request.user)
 
     if request.method == 'POST':
-        print('ta vindo aqui????')
         form = PeriodoImportanteForm(request.POST)
 
         if form.is_valid():
@@ -921,10 +920,13 @@ def calendario_periodos_importantes(request, id):
             return redirect('calendario_datas_importantes', id=id)
         
         else:
-            messages.error(request, 'As datas não estão no intervalo do calendário')
+            print('--- Houve um erro ao salvar o período importante. ----')
+            print(form.errors)
+            # messages.error(request, 'Houve um erro ao salvar o período importante.')
             return render(request, 'planner/calendarios/calendario_datas_importantes.html', {
                 'calendario': calendario,
                 'form': DataImportanteForm(),
+                'periodo_form': form,#PeriodoImportanteForm(request.POST),
                 'periodos': calendario.periodos.all().order_by('data_inicio'),
                 'datas': calendario.datas.all().order_by('data')
             })

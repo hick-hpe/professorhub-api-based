@@ -62,6 +62,18 @@ class PeriodoImportante(models.Model):
     detalhes = models.CharField(max_length=255, default='')
     eh_letivo = models.BooleanField(default=True)
 
+    # transferir do clean do form para cá??
+    # def clean(self):
+    #     if self.data_fim < self.data_inicio:
+    #         raise ValueError("A data final não pode ser anterior à data de início.")
+        
+    #     # sobreposição de períodos no mesmo calendário
+    #     periodos_existentes = PeriodoImportante.objects.filter(calendario=self.calendario)
+    #     for periodo in periodos_existentes:
+    #         if (self.data_inicio <= periodo.data_fim and self.data_fim >= periodo.data_inicio):
+    #             # nome do perido sobreposto
+    #             raise ValueError(f"O período informado sobrepõe-se ao período '{periodo.detalhes}' existente no calendário")
+
     def __str__(self):
         return f"{self.data_inicio} a {self.data_fim} - {self.detalhes}"
 
