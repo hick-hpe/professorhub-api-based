@@ -4,5 +4,14 @@ Calendario
         - excluir OK
     - validar sobreposicao de periodos/datas OK
     - atualizar planos de aulas, quando calendario for atualizado
-        - seja periodo ou datas
+        - datas 
+        - periodo 
+
+Regra de negócio:
+ao diminuir a data dos calendários, pode afetar os planos de aulas da disciplina
+por ex: o calendario permite 40 aulas, mas ao diminuir, seria necessário "excluir" algumas aulas o que fazer?
+- se tentar alterar/diminuir calendario
+    - bloquear de dimnuir, para evitar "excluir" as aulas?
+    - ???
+
 
