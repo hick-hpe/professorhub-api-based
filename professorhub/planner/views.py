@@ -855,12 +855,12 @@ def calendario_datas_importantes(request, id):
             data_importante = form.save(commit=False)
             data_importante.calendario = calendario
             data_importante.save()
+            # disparar 'evento' para reajustar datas de aulas
+            evento_calendario_reajustar_datas_aulas(dia_que_disparou=data_importante)
             return redirect('calendario_datas_importantes', id=id)
         
         else:
             messages.error(request, 'A data não está no intervalo do calendário')
-            # disparar 'evento' para reajustar datas de aulas
-            evento_calendario_reajustar_datas_aulas(dia_que_disparou=data_importante)
             return render(request, 'planner/calendarios/calendario_datas_importantes.html', {
                 'calendario': calendario,
                 'form': form,
