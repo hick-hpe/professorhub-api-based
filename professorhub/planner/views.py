@@ -1200,13 +1200,31 @@ def configuracoes_delete_view(request):
 # ############################################################################################################################
 def get_dias_aula_na_semana_disciplina(disciplina):
     """
-    Obter os dias da semana de aual de uma disciplina
+    Obter os dias da semana de aula de uma disciplina
     """
     dias = set()
     for plano in disciplina.planos.all()[:5]:
         dia = get_dia_semana(plano.data)
         dias.add(dia)
     return dias
+
+
+def num_aulas_por_dia_disciplina(disciplina):
+    """
+    Obter o número de aulas por dia da semana de uma disciplina
+    """
+    dias_aulas = {
+        'segunda': 0,
+        'terca': 0,
+        'quarta': 0,
+        'quinta': 0,
+        'sexta': 0,
+        'sábado': 0
+    }
+    for plano in disciplina.planos.all()[:5]:
+        dia = get_dia_semana(plano.data)
+        dias_aulas[dia] = plano.num_aulas
+    return dias_aulas
 
 
 def get_dia_semana(proximo_dia):
@@ -1480,4 +1498,111 @@ def gerar_aulas(disciplina, carga_horaria, dias_aulas, data_inicial=None):
     except Exception as e:
         print(f'Erro em gerar_aulas: {str(e)}')
         raise Exception(f'Erro ao gerar aulas: {str(e)}')
+
+
+# ############################################################################################################################
+#                                                  Eventos do calendário letivo
+# ############################################################################################################################
+# verifica se uma data é dia letivo para a disciplina
+def eh_dia_letivo(data, dias_aulas_disciplinas):
+    dia_semana = get_dia_semana(data)
+    return dia_semana in dias_aulas_disciplinas
+
+# mover as datas das aulas para um dia letivo se uma data importante for alterada para 'letivo'
+def reajustar_datas_aulas(
+    disciplina,
+    data_importante,
+    dias_aulas_disciplinas,
+    incremento
+):
+    """
+    Move as aulas para trás (dia letivo anterior) ou para frente (dia letivo posterior)
+    quando uma data importante passa a ser letiva.
+    """
+
+    planos_aulas = (
+        disciplina.planos
+        .filter(data__gt=data_importante.data)
+        .order_by('data')
+    )
+
+    ultimo_dia_ocupado = data_importante.data
+
+    for plano in planos_aulas:
+        nova_data = plano.data + timedelta(days=incremento)
+
+        # procura o dia letivo anterior válido
+        while (
+            not eh_dia_letivo(nova_data, dias_aulas_disciplinas)
+            or (
+                incremento > 0 and nova_data <= ultimo_dia_ocupado
+            )
+            or (
+                incremento < 0 and nova_data >= ultimo_dia_ocupado
+            )
+        ):
+            nova_data += timedelta(days=incremento)
+
+        # atualiza a aula
+        plano.data = nova_data
+        plano.save()
+
+        # atualiza o último dia ocupado
+        ultimo_dia_ocupado = nova_data
+ 
+    
+# mover as datas das aulas para frente se uma data importante for alterada para 'não letivo'
+
+# Evento: Reajustar datas das aulas ao criar/atualizar/excluir uma data importante ou período importante
+def evento_calendario_reajustar_datas_aulas(
+    dia_que_disparou: DataImportante | None = None,
+    periodo_que_disparou: PeriodoImportante | None = None
+):
+    """
+    Evento que reajusta as datas das aulas quando um evento no calendário letivo é criado/atualizado/excluído
+    """
+    
+    if dia_que_disparou is not None:
+        # obter calendario
+        calendario = dia_que_disparou.calendario
+
+        # obter disciplinas associadas ao calendário
+        disciplinas = Disciplina.objects.filter(calendario=calendario)
+
+        for disciplina in disciplinas:
+            # obter dias de aula da disciplina
+            dias_aulas_disciplinas = get_dias_aula_na_semana_disciplina(disciplina)
+
+            # se tornou 'não letivo'
+            if not dia_que_disparou.dia_letivo:
+                # verificar se disciplina possui aula no dia 'dia_que_disparou'
+                planos_no_dia = disciplina.planos.filter(data=dia_que_disparou.data)
+
+                # obter as aulas que já foram planejadas antes do dia que disparou
+                carga_horaria_ja_planejada = disciplina.planos.filter(
+                    data__lt=dia_que_disparou.data
+                ).aggregate(
+                    models.Sum('num_aulas')
+                )['num_aulas__sum'] or 0
+
+                # se possuir, recalcular as datas das aulas a partir dessa data
+                if planos_no_dia.exists():
+                    # movendo as aulas para frente
+                    reajustar_datas_aulas(disciplina, dia_que_disparou, dias_aulas_disciplinas, incremento=1)
+        
+            # se tornou 'letivo'
+            else:
+                # verificar se a disciplina possui aulas neste dia da semana
+                # se tiver, atualizar os dias
+                # senão, não fazer nada
+                dia_semana_dia_mudado = get_dia_semana(dia_que_disparou.data)
+
+                if dia_semana_dia_mudado in dias_aulas_disciplinas:
+                    # movendo as aulas para trás
+                    reajustar_datas_aulas(disciplina, dia_que_disparou, dias_aulas_disciplinas, incremento=-1)
+            
+
+    elif periodo_que_disparou is not None:
+        # todo: implementar reajuste por período importante
+        pass
 
