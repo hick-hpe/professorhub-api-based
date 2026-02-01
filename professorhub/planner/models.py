@@ -61,18 +61,18 @@ class PeriodoImportante(models.Model):
     data_fim = models.DateField()
     detalhes = models.CharField(max_length=255, default='')
     eh_letivo = models.BooleanField(default=True)
-
-    # transferir do clean do form para cá??
-    # def clean(self):
-    #     if self.data_fim < self.data_inicio:
-    #         raise ValueError("A data final não pode ser anterior à data de início.")
-        
-    #     # sobreposição de períodos no mesmo calendário
-    #     periodos_existentes = PeriodoImportante.objects.filter(calendario=self.calendario)
-    #     for periodo in periodos_existentes:
-    #         if (self.data_inicio <= periodo.data_fim and self.data_fim >= periodo.data_inicio):
-    #             # nome do perido sobreposto
-    #             raise ValueError(f"O período informado sobrepõe-se ao período '{periodo.detalhes}' existente no calendário")
+    # futuramente... talvez adicionar cor para diferenciar visualmente os períodos
+    # CORES_PERIODOS_CHOICES = [
+    #     ('vermelho', '#FF0000'),
+    #     ('azul', '#0000FF'),
+    #     ('verde', '#008000'),
+    #     ('amarelo', '#FFFF00'),
+    #     ('roxo', '#800080'),
+    #     ('laranja', '#FFA500'),
+    #     ('rosa', '#FFC0CB'),
+    #     ('cinza', '#808080'),
+    # ]
+    # cor = models.CharField(max_length=20, choices=CORES_PERIODOS_CHOICES, default='azul')
 
     def __str__(self):
         return f"{self.data_inicio} a {self.data_fim} - {self.detalhes}"

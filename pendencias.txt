@@ -4,7 +4,7 @@ Calendario
         - excluir OK
     - validar sobreposicao de periodos/datas OK
     - atualizar planos de aulas, quando calendario for atualizado
-        - datas 
+        - datas OK
         - periodo 
 
 Regra de negócio:
@@ -14,4 +14,7 @@ por ex: o calendario permite 40 aulas, mas ao diminuir, seria necessário "exclu
     - bloquear de dimnuir, para evitar "excluir" as aulas?
     - ???
 
+Revisar:
+- melhorar a aba 'eventos' do dashboard
+    - pensar noq colocar
 
