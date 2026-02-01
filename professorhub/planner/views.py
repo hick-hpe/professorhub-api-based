@@ -885,13 +885,16 @@ def calendario_datas_importantes_detail(request, id, data_id):
 
         calendario = get_object_or_404(CalendarioLetivo, id=id, user=request.user)
         data_importante = get_object_or_404(DataImportante, id=data_id, calendario=calendario)
+        dia_eh_letivo_antes = data_importante.dia_letivo
         form = DataImportanteForm(request.POST, instance=data_importante)
 
         if form.is_valid():
             form.save()
-
-        # disparar 'evento' para reajustar datas de aulas
-        evento_calendario_reajustar_datas_aulas(dia_que_disparou=data_importante)
+            dia_eh_letivo_depois = data_importante.dia_letivo
+        
+        # se houve mudança no status do dia (letivo / não letivo), reajustar as datas das aulas
+        if dia_eh_letivo_antes != dia_eh_letivo_depois:
+            evento_calendario_reajustar_datas_aulas(dia_que_disparou=data_importante)
         return redirect('calendario_datas_importantes', id=id)
 
 # CRUD Datas Importantes: DELETE
