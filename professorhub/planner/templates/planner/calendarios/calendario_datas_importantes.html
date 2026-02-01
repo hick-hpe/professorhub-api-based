@@ -38,6 +38,7 @@ Calendários
         </button>
     </div>
 
+    <!-- list datas -->
     <div class="table-responsive mt-3 shadow-sm rounded">
         <table class="table table-striped table-hover mb-0">
             <thead class="table-primary text-center align-middle">
@@ -100,6 +101,7 @@ Calendários
         </table>
     </div>
 
+    <!-- list periodos -->
     <div class="table-responsive mt-3 shadow-sm rounded">
         <table class="table table-striped table-hover mb-0">
             <thead class="table-primary text-center align-middle">
@@ -118,26 +120,39 @@ Calendários
                     <td>{{ periodo.data_inicio|date:'d/m/Y' }}</td>
                     <td>{{ periodo.data_fim|date:'d/m/Y' }}</td>
                     <td class="text-center">
-                        {% if periodo.dia_letivo %}
+                        {% if periodo.eh_letivo %}
                         <span class="badge bg-success">Sim</span>
                         {% else %}
                         <span class="badge bg-secondary">Não</span>
                         {% endif %}
                     </td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-outline-warning">
+                        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
+                                data-bs-target="#modal_edit_periodo" data-id-calendario="{{ calendario.id }}"
+                                data-id="{{ periodo.id }}" data-data-inicio="{{ periodo.data_inicio|date:'Y-m-d' }}"
+                                data-data-fim="{{ periodo.data_fim|date:'Y-m-d' }}" data-detalhes="{{ periodo.detalhes }}" data-eh-letivo="{{ periodo.eh_letivo }}"
+                                title="Editar período">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-danger">
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                data-bs-target="#modal_delete_periodo" data-id-calendario="{{ calendario.id }}"
+                                data-id="{{ periodo.id }}" data-detalhes="{{ periodo.detalhes }}"
+                                title="Excluir período">
                             <i class="bi bi-trash"></i>
                         </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="bi bi-calendar-x"></i><br>
+                        Nenhum período cadastrado
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
 
     <!-- criar data -->
     <div class="modal fade" id="criarData" tabindex="-1" aria-labelledby="criarDataLabel" aria-hidden="true">
@@ -210,7 +225,7 @@ Calendários
         </div>
     </div>
 
-    <!-- editar -->
+    <!-- editar data -->
     <div class="modal fade" id="modal_edit" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -246,6 +261,47 @@ Calendários
         </div>
     </div>
 
+    <!-- editar periodo -->
+     <div class="modal fade" id="modal_edit_periodo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Período</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form_edit_periodo" method="post">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="calendario" value="{{ calendario.id }}">
+
+                        <div class="mb-3">
+                            <label for="edit_detalhes">Detalhes</label>
+                            <input type="text" name="detalhes" id="edit_detalhes_periodo" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_data_inicio_periodo">Data Início</label>
+                            <input type="date" name="data_inicio" id="edit_data_inicio_periodo" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_data_fim_periodo">Data Fim</label>
+                            <input type="date" name="data_fim" id="edit_data_fim_periodo" class="form-control">
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="eh_letivo" id="edit_eh_letivo_periodo">
+                            <label class="form-check-label" for="eh_letivo">Dia letivo</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- excluir dia -->
     <div class="modal fade" id="modal_delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -261,6 +317,28 @@ Calendários
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <form id="form_delete" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- excluir periodo -->
+    <div class="modal fade" id="modal_delete_periodo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Excluir período</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o período <strong id="detalhes_modal_delete_periodo"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="form_delete_periodo" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Excluir</button>
                     </form>

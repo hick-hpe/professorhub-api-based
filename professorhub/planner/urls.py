@@ -75,4 +75,6 @@ urlpatterns = [
 
     # períodos importantes
     path('calendarios/<int:id>/periodos-importantes/', calendario_periodos_importantes, name='calendario_periodos_importantes'),
+    path('calendarios/<int:id>/periodos-importantes/<int:periodo_id>/', calendario_periodos_importantes_detail, name='calendario_periodos_importantes_detail'),
+    path('calendarios/<int:id>/periodos-importantes/<int:periodo_id>/delete/', calendario_periodos_importantes_delete, name='calendario_periodos_importantes_delete'),
 ]

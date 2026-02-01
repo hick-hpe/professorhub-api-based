@@ -840,7 +840,7 @@ def calendario_delete(request, id):
         return redirect('calendarios')
 
 # ############################################################################################################################
-#                                                  Calendário Letivo + Datas Importantes
+#                                                  Calendário Letivo: Datas Importantes
 # ############################################################################################################################
 
 # CRUD Datas Importantes: GET/POST
@@ -874,6 +874,37 @@ def calendario_datas_importantes(request, id):
         'periodos': calendario.periodos.all().order_by('data_inicio')
     })
 
+        
+# CRUD Datas Importantes: GET/PUT
+@login_required(login_url='/login/')
+def calendario_datas_importantes_detail(request, id, data_id):
+    if request.method == 'POST':
+        print('request ->', request.POST)
+
+        calendario = get_object_or_404(CalendarioLetivo, id=id, user=request.user)
+        data = get_object_or_404(DataImportante, id=data_id, calendario=calendario)
+        form = DataImportanteForm(request.POST, instance=data)
+
+        if form.is_valid():
+            form.save()
+
+        return redirect('calendario_datas_importantes', id=id)
+
+# CRUD Datas Importantes: DELETE
+@login_required(login_url='/login/')
+def calendario_datas_importantes_delete(request, id, data_id):
+    if request.method == 'POST':
+        calendario = get_object_or_404(CalendarioLetivo, id=id, user=request.user)
+        data = get_object_or_404(DataImportante, id=data_id, calendario=calendario)
+        data.delete()
+
+        return redirect('calendario_datas_importantes', id=id)
+
+
+# ############################################################################################################################
+#                                                  Calendário Letivo: Periodos Importantes
+# ############################################################################################################################
+
 # CRUD Periodos Importantes: GET/POST
 @login_required(login_url='/login/')
 def calendario_periodos_importantes(request, id):
@@ -905,32 +936,34 @@ def calendario_periodos_importantes(request, id):
         'datas': calendario.datas.all().order_by('data'),
         'periodos': calendario.periodos.all().order_by('data_inicio')
     })
-        
-# CRUD Datas Importantes: GET/PUT
+
+# CRUD Periodos Importantes: GET/PUT
 @login_required(login_url='/login/')
-def calendario_datas_importantes_detail(request, id, data_id):
+def calendario_periodos_importantes_detail(request, id, periodo_id):
     if request.method == 'POST':
         print('request ->', request.POST)
 
         calendario = get_object_or_404(CalendarioLetivo, id=id, user=request.user)
-        data = get_object_or_404(DataImportante, id=data_id, calendario=calendario)
-        form = DataImportanteForm(request.POST, instance=data)
+        periodo = get_object_or_404(PeriodoImportante, id=periodo_id, calendario=calendario)
+        form = PeriodoImportanteForm(request.POST, instance=periodo)
 
         if form.is_valid():
             form.save()
+        else:
+            print('---- errors ----')
+            print(form.errors)        
 
         return redirect('calendario_datas_importantes', id=id)
 
-# CRUD Datas Importantes: DELETE
+# CRUD Periodos Importantes: DELETE
 @login_required(login_url='/login/')
-def calendario_datas_importantes_delete(request, id, data_id):
+def calendario_periodos_importantes_delete(request, id, periodo_id):
     if request.method == 'POST':
         calendario = get_object_or_404(CalendarioLetivo, id=id, user=request.user)
-        data = get_object_or_404(DataImportante, id=data_id, calendario=calendario)
-        data.delete()
+        periodo = get_object_or_404(PeriodoImportante, id=periodo_id, calendario=calendario)
+        periodo.delete()
 
         return redirect('calendario_datas_importantes', id=id)
-
 
 # ############################################################################################################################
 #                                                  Avaliações

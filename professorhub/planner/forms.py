@@ -87,7 +87,7 @@ class PeriodoImportanteForm(forms.ModelForm):
 
     class Meta:
         model = PeriodoImportante
-        fields = ['data_inicio', 'data_fim', 'calendario', 'detalhes', 'eh_letivo']
+        fields = ['data_inicio', 'data_fim', 'detalhes', 'eh_letivo']
         labels = {
             'eh_letivo': 'É período letivo?'
         }
