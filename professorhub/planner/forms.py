@@ -65,6 +65,7 @@ class DataImportanteForm(forms.ModelForm):
         # print('cleaned_data:', cleaned_data)
         data = cleaned_data.get('data')
         calendario = cleaned_data.get('calendario')
+        dia_letivo = cleaned_data.get('dia_letivo')
 
         if calendario and data:
             print("calendario:", calendario)
@@ -72,7 +73,35 @@ class DataImportanteForm(forms.ModelForm):
                 print('data inválida')
                 self.add_error('data', 'A data deve estar dentro do intervalo do calendário letivo.')
         
-        print('erros -> ', self.non_field_errors)
+        # na mesma data de outro dia importante
+        dia_importante = DataImportante.objects.filter(data=data)
+
+        if self.instance.pk:
+            dia_importante = dia_importante.exclude(pk=self.instance.pk)
+
+        if dia_importante.exists():
+            existente = dia_importante.first()
+            self.add_error(
+                'data',
+                f'Já existe a data importante "{existente.detalhes}" cadastrada neste dia!'
+            )
+        
+        # conflito com algum perido??
+        periodos = PeriodoImportante.objects.filter(
+            data_inicio__lte=data,
+            data_fim__gte=data,
+            eh_letivo=(not dia_letivo) 
+        )
+
+        if periodos.exists():
+            nomes_periodos = ", ".join(
+                f'"{p.detalhes}"' for p in periodos
+            )
+            self.add_error(
+                None,
+                f'Há conflito com os períodos {nomes_periodos}'
+            )
+        
         return cleaned_data
 
 
@@ -117,6 +146,7 @@ class PeriodoImportanteForm(forms.ModelForm):
         data_inicio = cleaned_data.get('data_inicio')
         data_fim = cleaned_data.get('data_fim')
         calendario = cleaned_data.get('calendario')
+        eh_letivo = cleaned_data.get('eh_letivo')
 
         if data_inicio and data_fim and data_inicio > data_fim:
             self.add_error('data_fim', "A data final deve ser maior ou igual à data de início.")
@@ -129,7 +159,23 @@ class PeriodoImportanteForm(forms.ModelForm):
         
         if data_fim and data_inicio and data_fim < data_inicio:
             self.add_error('data_fim', "A data final não pode ser anterior à data de início.")
+
+        # conflitos entre
+        # perido letivo - dia nao letivo
+        # perido nao letivo - dia letivo
+        dias_conflitantes = DataImportante.objects.filter(
+            dia_letivo=not eh_letivo,
+            data__gte=data_inicio,
+            data__lte=data_fim,
+        )
         
+        if dias_conflitantes.exists():
+            lista_dias = [d.data.strftime("%d/%m/%Y") for d in dias_conflitantes]
+            self.add_error(
+                None,
+                f'Há conflitos com os dias {"não " if not eh_letivo else ""}letivos {lista_dias}'
+            )
+
         # sobreposição de períodos no mesmo calendário
         periodos_existentes = PeriodoImportante.objects.filter(calendario=calendario)
         for periodo in periodos_existentes:

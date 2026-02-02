@@ -1,7 +1,7 @@
 /* ====== Layout geral ====== */
 body {
     background-color: #f8f9fb;
-    font-family: 'Poppins', sans-serif;
+    /* font-family: 'Poppins', sans-serif; */
 }
 
 /* ====== Cards ====== */
@@ -52,8 +52,15 @@ body {
 
 /* ====== Calendário ====== */
 .table {
+    table-layout: fixed;
     border-radius: 10px;
     overflow: hidden;
+}
+
+/* largura dos dias */
+.table th,
+.table td {
+    width: 80px;
 }
 
 .table th {
@@ -120,4 +127,6 @@ body {
 .dia-calendario:hover {
     background-color: #dbdcdd !important;
 }
+
+
 

@@ -17,4 +17,7 @@ por ex: o calendario permite 40 aulas, mas ao diminuir, seria necessário "exclu
 Revisar:
 - melhorar a aba 'eventos' do dashboard
     - pensar noq colocar
+- sabados letivos??
+- quando diminuir carga horaria, excluir por data ou id do plano de aula??
+
 
