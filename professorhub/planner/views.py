@@ -15,7 +15,12 @@ from datetime import timedelta
 # View Dashboard Admin
 @login_required(login_url='/login/')
 def admin_dashboard_view(request):
-    return render(request, 'planner/admin_dashboard.html')
+    data = {
+        'periodos': PeriodoImportante.objects.filter(
+            calendario__user=request.user
+        )
+    }
+    return render(request, 'planner/admin_dashboard.html', data)
 
 # AJAX: GET todos os planos de aulas
 @login_required(login_url='/login/')

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block link_css %}
-    <link rel="stylesheet" href="{% static 'css/planner/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/planner/dashboard.css' %}">
 {% endblock %}
 
 {% block title %}Dashboard{% endblock %}
@@ -20,14 +20,11 @@ Dashboard
                 <div class="card-body">
                     <h5 class="card-title mb-3">Calendário</h5>
 
-                    <div
-                        class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
                         <!-- Seletor de Mês -->
                         <div class="d-flex align-items-center gap-2">
-                            <label for="mes-select"
-                                class="fw-semibold mb-0">Mês:</label>
-                            <select id="mes-select"
-                                class="form-select w-auto">
+                            <label for="mes-select" class="fw-semibold mb-0">Mês:</label>
+                            <select id="mes-select" class="form-select w-auto">
                                 <option value="0">Janeiro</option>
                                 <option value="1">Fevereiro</option>
                                 <option value="2">Março</option>
@@ -56,16 +53,13 @@ Dashboard
                         </div> -->
 
                         <!-- Clica em "Hoje" -> o calendário volta para o mês atual -->
-                        <button
-                            id="btn-hoje"
-                            class="btn btn-outline-primary d-flex align-items-center gap-1">
+                        <button id="btn-hoje" class="btn btn-outline-primary d-flex align-items-center gap-1">
                             <i class="bi bi-calendar-event"></i> Hoje
                         </button>
                     </div>
 
                     <div class="table-responsive">
-                        <table
-                            class="table table-bordered text-center align-middle mb-0">
+                        <table class="table table-bordered text-center align-middle mb-0">
                             <thead class="table-light">
                                 <!-- tratar pra coupar repeat(7, 1fr) exato -->
                                 <tr class="table-dark">
@@ -102,11 +96,9 @@ Dashboard
                                     <td class="dia-calendario">14</td>
                                     <td class="dia-calendario">15</td>
                                     <td class="bg-primary text-white p-0">
-                                        <div
-                                            class="d-flex flex-column justify-content-between h-100 p-1">
+                                        <div class="d-flex flex-column justify-content-between h-100 p-1">
                                             <div>16</div>
-                                            <div
-                                                class="eventos mt-auto d-flex gap-1 justify-content-center">
+                                            <div class="eventos mt-auto d-flex gap-1 justify-content-center">
                                                 <div class="evento"></div>
                                                 <div class="evento"></div>
                                             </div>
@@ -123,11 +115,9 @@ Dashboard
                                     <td class="dia-calendario">23</td>
                                     <td class="dia-calendario">24</td>
                                     <td class="bg-primary text-white p-0">
-                                        <div
-                                            class="d-flex flex-column justify-content-between h-100 p-1">
+                                        <div class="d-flex flex-column justify-content-between h-100 p-1">
                                             <div>25</div>
-                                            <div
-                                                class="eventos mt-auto d-flex justify-content-center">
+                                            <div class="eventos mt-auto d-flex justify-content-center">
                                                 <div class="evento"></div>
                                             </div>
                                         </div>
@@ -137,11 +127,9 @@ Dashboard
                                 <tr>
                                     <td class="dia-calendario">27</td>
                                     <td class="bg-primary text-white p-0">
-                                        <div
-                                            class="d-flex flex-column justify-content-between h-100 p-1">
+                                        <div class="d-flex flex-column justify-content-between h-100 p-1">
                                             <div>28</div>
-                                            <div
-                                                class="eventos mt-auto d-flex justify-content-center">
+                                            <div class="eventos mt-auto d-flex justify-content-center">
                                                 <div class="evento"></div>
                                             </div>
                                         </div>
@@ -162,10 +150,28 @@ Dashboard
         <div class="col-12 col-lg-6">
             <div class="card h-100 card-eventos">
                 <div class="card-body">
-                    <h5 class="card-title">Eventos</h5>
-                    <p class="card-text">
+                    <div>
+                        <h5 class="card-title">Eventos</h5>
+                        <!-- periodos -->
+                        <p class="card-text">
+                        <div class="list-group">
+                            {% for p in periodos %}
+                            <div class="alert alert-info">
+                                <strong>{{ p.detalhes }}</strong>: {{p.data_inicio|date:'d/m/Y' }} - {{ p.data_fim|date:'d/m/Y' }}
+                            </div>
+                            {% empty %}
+                            <div class="alert alert-info">Nenhum evento encontrado.</div>
+                            {% endfor %}
+                        </div>
+                        </p>
+                    </div>
+
+                    <div>
+                        <h5 class="card-title">Tarefas</h5>
+                        <p class="card-text">
                         <ul class="list-group" id="eventosTarefas"></ul>
-                    </p>
+                        </p>
+                    </div>
                     <!-- <a href="#" class="card-link">Ver todos os eventos</a> -->
                     <!-- <a href="#" class="card-link">Cadastrar novo</a> -->
                 </div>
