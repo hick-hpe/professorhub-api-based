@@ -1,0 +1,96 @@
+@startuml
+
+class User
+
+class Professor {
+    conta_ativada: Boolean
+}
+
+class TokenAtivacaoConta {
+    email: String
+    token: String
+    criado_em: DateTime
+    expiracao: DateTime
+}
+
+class CodigoRecuperacaoSenha {
+    email: String
+    code: String
+    data_criacao: DateTime
+}
+
+class CalendarioLetivo {
+    nome: String
+    data_inicio: Date
+    data_fim: Date
+}
+
+class DataImportante {
+    data: Date
+    detalhes: String
+    dia_letivo: Boolean
+}
+
+class Disciplina {
+    nome: String
+    periodo: String
+    carga_horaria: Integer
+    aviso: String
+}
+
+class Ementa {
+    descricao: String
+    abordado: Boolean
+}
+
+class Objetivo {
+    descricao: String
+    alcancado: Boolean
+}
+
+class PlanoAula {
+    data: Date
+    titulo: String
+    objetivos: Text
+    conteudos: Text
+    status: String
+    num_aulas: Integer
+}
+
+class Tarefa {
+    nome: String
+    descricao: Text
+    prazo: Date
+    status: String
+}
+
+class Avaliacao {
+    tipo: String
+    etapa: String
+    status: String
+    data: Date
+    identificador: String
+}
+
+' relacionamentos
+
+User "1" --> "1" Professor
+User "1" --> "0..*" CalendarioLetivo
+User "1" --> "0..*" Disciplina
+
+CalendarioLetivo "1" --> "0..*" DataImportante
+CalendarioLetivo "1" --> "0..*" Disciplina
+
+Disciplina "1" --> "0..*" Ementa
+Disciplina "1" --> "0..*" Objetivo
+Disciplina "1" --> "0..*" PlanoAula
+Disciplina "1" --> "0..*" Tarefa
+Disciplina "1" --> "0..*" Avaliacao
+
+PlanoAula "1" --> "0..*" Tarefa
+PlanoAula "1" --> "0..*" Avaliacao
+
+PlanoAula "0..1" --> "0..*" Ementa
+
+@enduml
+

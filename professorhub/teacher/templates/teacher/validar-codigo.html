@@ -4,7 +4,11 @@
 <div class="shadow p-4 rounded-3" style="width: clamp(350px, 400px, 500px);">
   {% if messages %}
   {% for message in messages %}
-  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% if message.tags == "error" %}
+      <div class="alert alert-danger">{{ message }}</div>
+    {% else %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endif %}
   {% endfor %}
   {% endif %}
 
@@ -19,11 +23,10 @@
     {% csrf_token %}
     <div class="mb-3">
       <label for="codigo" class="form-label">Digite o código recebido no seu email para continuar</label>
-      <input type="text" class="form-control" id="codigo" name="codigo" placeholder="123456"
-        required>
+      <input type="text" class="form-control" id="codigo" name="codigo" placeholder="123456" required>
     </div>
 
-      <button type="submit" class="btn text-white w-100 bg-primary">Enviar</button>
+    <button type="submit" class="btn text-white w-100 bg-primary">Enviar</button>
   </form>
 </div>
 {% endblock %}

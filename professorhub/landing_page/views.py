@@ -1,8 +1,9 @@
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
-# Create your views here.
 def index(request):
-    return render(request,'landing_page/index.html')
+    # return render(request,'landing_page/index.html') # desativada temporariamente
+    return redirect('/login/') # redirecionar para '/login/' enquanto isso
+
 

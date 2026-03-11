@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from planner.models import Professor, Codigo, TokenAtivacaoConta
+from planner.models import Professor, CodigoRecuperacaoSenha, TokenAtivacaoConta
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.urls import reverse
@@ -83,6 +83,7 @@ def submit_register(request):
                     login(request, user)
                     Professor.objects.create(user=user)
 
+                    # envia email de ativacao de conta
                     try:
                         enviar_email_para_ativar_conta(request)
                     except Exception as e:
@@ -113,12 +114,14 @@ def logout_view(request):
     messages.success(request, "Você saiu da sua conta com sucesso.")
     return redirect('index') 
 
+
 @login_required(login_url='index')
 def enviar_email_verificacao_view(request):
     """
     Exibe a página avisando o usuário para verificar o e-mail
     """
     return render(request, 'teacher/ativar_conta.html', {'user': request.user})
+
 
 def conta_ativada_view(request):
     """
@@ -249,43 +252,63 @@ def enviar_email_para_ativar_conta(request):
     msg.send(fail_silently=False)
 
 
-def enviar_email_para_recuperar_senha(email, codigo, data):
-    # dados do email
-    subject = 'Redefinição de senha'
-    from_email = settings.DEFAULT_FROM_EMAIL
-    to = [email]
+def enviar_email_para_recuperar_senha(email, codigo):
+    print("1 - Entrou na função")
 
-    text_content = f'Quase lá!'
-    html_content = f"""
-        <div style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 30px;">
-            <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <tr>
-                    <td style="background-color: #1C6EA4; padding: 20px; text-align: center;">
-                        <h1 style="color: #ffffff; margin: 0;">Redefinição de senha</h1>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 30px;">
-                        <p style="font-size: 16px; color: #333;">Olá,</p>
-                        <p style="font-size: 16px; color: #333; line-height: 1.5;">
-                            Você solicitou uma redefinição de senha. Seu código de verificação é:
-                        </p>
-                        <p style="text-align: center; margin: 30px 0; font-size: 30px; font-weight: bold; letter-spacing: 2px;">
-                            {codigo}
-                        </p>
-                        <p style="font-size: 14px; color: #777; text-align: center; margin-top: 40px;">
-                            &copy; {data} ProfessorHub. Todos os direitos reservados.
-                        </p>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    """
+    try:
+        # dados do email
+        subject = 'Redefinição de senha'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to = [email]
+        data = datetime.date.today().year
 
-    # enviar email
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-    msg.attach_alternative(html_content, "text/html")
-    msg.send(fail_silently=False)
+        print("2 - Dados básicos definidos")
+
+        text_content = f'Quase lá!'
+        html_content = f"""
+            <div style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 30px;">
+                <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td style="background-color: #1C6EA4; padding: 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0;">Redefinição de senha</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px;">
+                            <p style="font-size: 16px; color: #333;">Olá,</p>
+                            <p style="font-size: 16px; color: #333; line-height: 1.5;">
+                                Você solicitou uma redefinição de senha. Seu código de verificação é:
+                            </p>
+                            <p style="text-align: center; margin: 30px 0; font-size: 30px; font-weight: bold; letter-spacing: 2px;">
+                                {codigo}
+                            </p>
+                            <p style="font-size: 14px; color: #777; text-align: center; margin-top: 40px;">
+                                &copy; {data} ProfessorHub. Todos os direitos reservados.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        """
+
+        print("3 - HTML criado")
+
+        # criar email
+        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+
+        print("4 - Objeto de email criado")
+
+        msg.attach_alternative(html_content, "text/html")
+        
+        print("5 - HTML anexado")
+
+        # enviar email
+        msg.send(fail_silently=False)
+
+        print("6 - Email enviado com sucesso")
+
+    except Exception as e:
+        print("ERRO AO ENVIAR EMAIL:", e)
 
 
 @login_required(login_url='index')
@@ -317,10 +340,10 @@ def recuperar_senha_view(request):
 
             # gera e salva código no banco
             codigo = gerar_codigo()
-            Codigo.objects.create(email=email, code=codigo)
+            CodigoRecuperacaoSenha.objects.create(email=email, code=codigo)
 
             # envia o email
-            enviar_email_para_recuperar_senha(email, codigo, datetime.date.today().year)
+            enviar_email_para_recuperar_senha(email, codigo)
 
             messages.success(request, 'Um código de recuperação foi enviado para o seu email.')
             return response
@@ -337,7 +360,7 @@ def validar_codigo_recuperacao_senha_view(request):
         codigo = request.POST.get('codigo')
 
         # verifica se existe o código associado àquele email
-        codigo_obj = Codigo.objects.filter(email=email, code=codigo)
+        codigo_obj = CodigoRecuperacaoSenha.objects.filter(email=email, code=codigo)
         if codigo_obj.exists():
             codigo_obj = codigo_obj.first()
             if not codigo_obj.codigo_expirou():

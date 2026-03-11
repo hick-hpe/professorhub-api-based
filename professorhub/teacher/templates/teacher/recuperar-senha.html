@@ -4,7 +4,11 @@
 <div class="shadow p-4 rounded-3" style="width: clamp(350px, 400px, 500px);">
   {% if messages %}
   {% for message in messages %}
-  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% if message.tags == "error" %}
+      <div class="alert alert-danger">{{ message }}</div>
+    {% else %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endif %}
   {% endfor %}
   {% endif %}
 

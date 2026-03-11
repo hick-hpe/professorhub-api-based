@@ -5,19 +5,28 @@ Calendario
     - validar sobreposicao de periodos/datas OK
     - atualizar planos de aulas, quando calendario for atualizado
         - datas OK
-        - periodo 
+        - periodo (nao lembro, revisar)
 
 Regra de negócio:
 ao diminuir a data dos calendários, pode afetar os planos de aulas da disciplina
 por ex: o calendario permite 40 aulas, mas ao diminuir, seria necessário "excluir" algumas aulas o que fazer?
 - se tentar alterar/diminuir calendario
-    - bloquear de dimnuir, para evitar "excluir" as aulas?
-    - ???
+    - bloquear de dimnuir, para evitar "excluir" as aulas? SIM OK
 
-Revisar:
+Pontos adicionais:
 - melhorar a aba 'eventos' do dashboard
     - pensar noq colocar
 - sabados letivos??
 - quando diminuir carga horaria, excluir por data ou id do plano de aula??
 
+
+Landing Page: OK
+- desativar temporariamente para arrumar (nao eh importante agr)
+- redirecionar para '/login/' enquanto isso
+
+Layout:
+- atualizar layout geral
+- adicionar 'templates/email/ativar_conta.html'
+- divergencia entre layouts
+    - cards "disciplina" e "calendario"
 

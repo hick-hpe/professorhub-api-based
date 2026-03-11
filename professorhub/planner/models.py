@@ -11,7 +11,7 @@ class Professor(models.Model):
         return self.user.username
     
 class TokenAtivacaoConta(models.Model):
-    email = models.CharField(max_length=64, unique=True, blank=True)
+    email = models.EmailField(max_length=64, unique=True, blank=True)
     token = models.CharField(max_length=64, unique=True)
     criado_em = models.DateTimeField(auto_now_add=True)
 
@@ -23,14 +23,14 @@ class TokenAtivacaoConta(models.Model):
     def __str__(self):
         return f'{self.email} - {self.token}'
 
-# alterar para "CodigoRecuperacaoSenha"
-class Codigo(models.Model):
-    email = models.CharField(max_length=30, blank=True)
+class CodigoRecuperacaoSenha(models.Model):
+    email = models.EmailField(max_length=30, blank=True)
     code = models.CharField(max_length=6)
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    tempo_max_minutos = 3
 
     def codigo_expirou(self):
-        tempo_limite = timedelta(minutes=3)
+        tempo_limite = timedelta(minutes=self.tempo_max_minutos)
         agora = timezone.now()
         return agora - self.data_criacao > tempo_limite
 
