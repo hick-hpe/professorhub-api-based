@@ -11,9 +11,10 @@ class Professor(models.Model):
         return self.user.username
     
 class TokenAtivacaoConta(models.Model):
-    email = models.EmailField(max_length=64, unique=True, blank=True)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='professor', null=True)
     token = models.CharField(max_length=64, unique=True)
     criado_em = models.DateTimeField(auto_now_add=True)
+    tempo_max_minutos = 1 # -> 10
 
     def codigo_expirou(self):
         tempo_limite = timedelta(minutes=3)
@@ -21,13 +22,14 @@ class TokenAtivacaoConta(models.Model):
         return agora - self.criado_em > tempo_limite
 
     def __str__(self):
-        return f'{self.email} - {self.token}'
+        return f'{self.professor.user.email} - {self.token}'
+
 
 class CodigoRecuperacaoSenha(models.Model):
     email = models.EmailField(max_length=30, blank=True)
     code = models.CharField(max_length=6)
     data_criacao = models.DateTimeField(auto_now_add=True)
-    tempo_max_minutos = 3
+    tempo_max_minutos = 3 # -> 10
 
     def codigo_expirou(self):
         tempo_limite = timedelta(minutes=self.tempo_max_minutos)

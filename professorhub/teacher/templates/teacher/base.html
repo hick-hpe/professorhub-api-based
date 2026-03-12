@@ -14,14 +14,11 @@
 
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light py-3 shadow-sm sticky-top">
     <div class="container-fluid px-5 d-flex justify-content-between align-items-center">
 
-      <!-- Logo à esquerda -->
       <a class="navbar-brand fw-bold me-auto" href="/">ProfessorHub</a>
 
-      <!-- Botão do colapso (mobile) -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
         aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -30,22 +27,14 @@
   </nav>
 
 
-  <!-- Conteúdo -->
   <main>
     {% block content %}
     {% endblock %}
   </main>
 
-  <!-- Footer -->
   <footer class="bg-light text-center py-4 border-top">
     <div class="container">
       <p class="mb-2">&copy; 2025 ProfessorHub. Todos os direitos reservados.</p>
-      <!-- <p class="mb-0">
-        <a href="#home" class="text-decoration-none text-primary me-3">Home</a>
-        <a href="#sobre" class="text-decoration-none text-primary me-3">Sobre</a>
-        <a href="#recursos" class="text-decoration-none text-primary me-3">Recursos</a>
-        <a href="#contato" class="text-decoration-none text-primary">Contato</a>
-      </p> -->
     </div>
   </footer>
 

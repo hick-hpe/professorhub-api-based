@@ -4,10 +4,17 @@
 <div class="shadow p-4 rounded-3" style="width: clamp(350px, 400px, 500px);">
   {% if messages %}
     {% for message in messages %}
+    {% if message.tags == "error" %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       {{ message }}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    {% else %}
+    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
     {% endfor %}
   {% endif %}
 

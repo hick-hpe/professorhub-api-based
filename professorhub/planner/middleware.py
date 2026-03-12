@@ -6,6 +6,7 @@ class ContaAtivadaMiddleware:
     """
     Bloqueia o acesso de usuários logados que não têm conta ativada.
     Usuários com conta ativada continuam para a rota desejada.
+    Permitir apenas 'admin'
     """
     def __init__(self, get_response):
         self.get_response = get_response
@@ -18,24 +19,25 @@ class ContaAtivadaMiddleware:
             reverse('submit_register'),
             reverse('enviar_email_verificacao_view'),
             reverse('reenviar_email_verificacao'),
-            reverse('conta_ativada_view'),
+            reverse('ativar_conta_view'),
             reverse('recuperar_senha'),
             reverse('validar_codigo'),
             reverse('redefinir_senha'),
-            '/admin/',
-            '/static/',
-            '/media/'
+            '/admin',
+            '/static',
+            '/media'
         ]
 
         # se for a index
         if request.path == '/':
             return self.get_response(request)
 
-        if any(request.path.startswith(r) for r in rotas_livres):
+        if any(r.startswith(request.path) for r in rotas_livres):
             return self.get_response(request)
 
         # Se usuário não está autenticado, deixa seguir
         if not request.user.is_authenticated:
+            print(f'BLOQUEADA: "{request.path}"')
             return redirect('index')
 
         # Verifica se a conta está ativada

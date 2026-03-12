@@ -1,0 +1,27 @@
+{% extends 'teacher/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm p-2" style="max-width: 500px; width: 100%;">
+    <div class="card-body text-center">
+        <h1 class="card-title mb-3">Token inválido</h1>
+
+        {% if email %}
+            <div class="p-3">
+                O token de ativação associado ao email <strong>{{ email }}</strong> expirou por motivos de segurança.
+            </div>
+        {% elif token %}
+            <div class="p-3">
+                O token <strong>{{ token }}</strong> é inválido ou inexistente!!!
+            </div>
+        {% endif %}
+
+        <!-- botao para reenviar o e-mail -->
+        <form action="{% url 'reenviar_email_verificacao' %}" method="post" class="mb-1">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary w-100">Reenviar e-mail</button>
+        </form>
+
+        <a href="{% url 'index' %}" class="btn btn-secondary w-100">Voltar à página inicial</a>
+    </div>
+</div>
+{% endblock %}
