@@ -30,3 +30,6 @@ Layout:
 - divergencia entre layouts
     - cards "disciplina" e "calendario"
 
+Bibliotecas para implementar depois:
+- django-crontab: agendar tarefas
+- django-axes: tentativas de login

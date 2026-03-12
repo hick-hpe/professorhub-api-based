@@ -12,101 +12,53 @@ from django.core.mail import EmailMultiAlternatives
 from django.http import HttpResponse
 import datetime
 import random
+from .services.auth_service import fazer_login_usuario, registrar_usuario
+
 
 def submit_login(request):
+
     if request.method == 'POST':
+
         email = request.POST.get('loginEmail')
         senha = request.POST.get('loginPassword')
 
-        if email and senha:
-            user = User.objects.filter(email=email).first()
+        user, msg_erro = fazer_login_usuario(email, senha)
 
-            if not user:
-                messages.error(request, 'Usuário não cadastrado.')
-                return redirect('submit_login')
+        if msg_erro:
+            messages.error(msg_erro)
+            return redirect('submit_login')
 
-            user = authenticate(username=user.username, password=senha)
-            if user is not None:
-                login(request, user)
-                return redirect('admin_dashboard')
-            else:
-                messages.error(request, "Credenciais inválidas. Verifique e tente novamente.")
-        else:
-            messages.error(request, "Preencha todos os campos.")
+        login(request, user)
+        return redirect('admin_dashboard')
 
-        return redirect('submit_login')
-    else:
-        return render(request, 'teacher/login.html')
+    return render(request, 'teacher/login.html')
 
 
 def submit_register(request):
+
     if request.method == 'POST':
+
         nome = request.POST.get('registerName')
-        pwd = request.POST.get('registerPassword')
-        confirm_pwd = request.POST.get('confirmPassword')
-        correio_eletronico = request.POST.get('registerEmail')
+        senha = request.POST.get('registerPassword')
+        confirm_senha = request.POST.get('confirmPassword')
+        email = request.POST.get('registerEmail')
 
-        if nome and pwd and correio_eletronico and confirm_pwd:
-            # Verifica se já existe um usuário com o mesmo e-mail
-            if User.objects.filter(email=correio_eletronico).exists():
-                messages.error(request, "Email já cadastrado. Escolha outro ou tente fazer o login.")
-                messages.error(request, "Email já cadastrado. Escolha outro ou tente fazer o login.")
-                return redirect('submit_register')
+        user, msg_erro = registrar_usuario(nome, email, senha, confirm_senha)
 
-            if pwd != confirm_pwd:
-                messages.error(request, "As senhas não coindizem")
-                return redirect('submit_register')
-
-            # minimo de caracteres na senha
-            if len(pwd) < 8:
-                messages.error(request, "A senha deve ter no mínimo 8 caracteres.")
-                return redirect('submit_register')
-
-            try:
-                # Cria o novo usuário
-                user = User.objects.create_user(
-                    username=nome,
-                    email=correio_eletronico,
-                    password=pwd,
-                    first_name=nome
-                )
-
-                # Cria o token
-                TokenAtivacaoConta.objects.create(
-                    email=user.email,
-                    token=secrets.token_hex(32),
-                )
-
-                # Autentica e faz login
-                user = authenticate(username=nome, password=pwd)
-                if user is not None:
-                    login(request, user)
-                    Professor.objects.create(user=user)
-
-                    # envia email de ativacao de conta
-                    try:
-                        enviar_email_para_ativar_conta(request)
-                    except Exception as e:
-                        print('Erro ao tentar enviar email de ativação de conta!!!')
-                        print(e)
-                    
-                    print('Email enviado!!!')
-
-                    return redirect('enviar_email_verificacao_view')
-
-                else:
-                    messages.error(request, "Usuário criado, mas falha ao autenticar.")
-                    return redirect('submit_register')
-            except Exception as e:
-                messages.error(request, f"Erro ao criar usuário: {e}")
-                return redirect('submit_register')
-                
-        else:
-            messages.error(request, "Algum campo está vazio.")
+        if msg_erro:
+            messages.error(request, msg_erro)
             return redirect('submit_register')
-            
-    else:
-        return render(request, 'teacher/register.html')
+
+        login(request, user)
+
+        try:
+            enviar_email_para_ativar_conta(request)
+        except Exception as e:
+            print("Erro ao enviar email:", e)
+
+        return redirect('enviar_email_verificacao_view')
+
+    return render(request, 'teacher/register.html')
 
 
 def logout_view(request):
@@ -157,7 +109,7 @@ def conta_ativada_view(request):
         print("Token expirado e deletado.")
 
         # gerar novo token
-        novo_token = secrets.token_hex(32)
+        novo_token = secrets.token_urlsafe(32)
         TokenAtivacaoConta.objects.create(
             email=email,
             token=novo_token,
@@ -166,7 +118,7 @@ def conta_ativada_view(request):
 
         # informa que o token expirou
         return render(request, "teacher/token_expirado.html", {
-            "email": token_obj.email
+            "email": email
         })
 
     # buscar o usuário associado
@@ -326,7 +278,7 @@ def reenviar_email_verificacao(request):
 
 def gerar_codigo():
     # gerar código de recuperação de senha
-    return str(random.randint(111111, 999999))
+    return f"{random.randint(0,999999):06d}"
 
 
 def recuperar_senha_view(request):
@@ -336,7 +288,7 @@ def recuperar_senha_view(request):
         if User.objects.filter(email=email).exists():
             # salva o email nos cookies
             response = redirect('validar_codigo')
-            response.set_cookie('email', email, httponly=True)
+            request.session['email_recuperacao'] = email
 
             # gera e salva código no banco
             codigo = gerar_codigo()
@@ -356,7 +308,7 @@ def recuperar_senha_view(request):
 def validar_codigo_recuperacao_senha_view(request):
     # validar o código para permitir redefinição de senha
     if request.method == 'POST':
-        email = request.COOKIES.get('email')
+        email = request.session.get('email_recuperacao')
         codigo = request.POST.get('codigo')
 
         # verifica se existe o código associado àquele email
@@ -364,6 +316,7 @@ def validar_codigo_recuperacao_senha_view(request):
         if codigo_obj.exists():
             codigo_obj = codigo_obj.first()
             if not codigo_obj.codigo_expirou():
+                codigo_obj.delete()
                 messages.success(request, 'Código validado com sucesso. Agora redefina sua senha.')
                 return redirect('redefinir_senha')
             else:
@@ -383,7 +336,12 @@ def redefinir_senha_view(request):
         if senha and confirm_senha:
             if senha == confirm_senha:
                 email = request.COOKIES.get('email')
-                user = User.objects.get(email=email)
+                user = User.objects.filter(email=email).first()
+
+                if not user:
+                    messages.error(request, "Usuário não encontrado.")
+                    return redirect('submit_login')
+                
                 user.set_password(senha)
                 user.save()
                 return redirect('submit_login')
