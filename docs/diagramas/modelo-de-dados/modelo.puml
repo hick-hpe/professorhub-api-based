@@ -1,0 +1,148 @@
+@startuml
+
+entity "User" as user {
+  *id : number <<PK>>
+  --
+  username : text
+  email : text
+}
+
+entity "Professor" as professor {
+  *id : number <<PK>>
+  --
+  *user_id : number <<FK>>
+  conta_ativada : boolean
+}
+
+entity "TokenAtivacaoConta" as token {
+  *id : number <<PK>>
+  --
+  *professor_id : number <<FK>>
+  token : varchar(64)
+  criado_em : datetime
+}
+
+entity "CodigoRecuperacaoSenha" as recuperacao {
+  *id : number <<PK>>
+  --
+  email : varchar(30)
+  code : varchar(6)
+  data_criacao : datetime
+}
+
+entity "CalendarioLetivo" as calendario {
+  *id : number <<PK>>
+  --
+  *user_id : number <<FK>>
+  nome : varchar(100)
+  data_inicio : date
+  data_fim : date
+}
+
+entity "DataImportante" as data_importante {
+  *id : number <<PK>>
+  --
+  *calendario_id : number <<FK>>
+  data : date
+  detalhes : varchar(255)
+  dia_letivo : boolean
+}
+
+entity "PeriodoImportante" as periodo {
+  *id : number <<PK>>
+  --
+  *calendario_id : number <<FK>>
+  data_inicio : date
+  data_fim : date
+  detalhes : varchar(255)
+  eh_letivo : boolean
+}
+
+entity "Disciplina" as disciplina {
+  *id : number <<PK>>
+  --
+  *user_id : number <<FK>>
+  *calendario_id : number <<FK>>
+  nome : varchar(100)
+  periodo : varchar
+  carga_horaria : int
+  aviso : varchar(100)
+}
+
+entity "Ementa" as ementa {
+  *id : number <<PK>>
+  --
+  *disciplina_id : number <<FK>>
+  plano_aula_id : number <<FK>>
+  descricao : varchar(255)
+  abordado : boolean
+}
+
+entity "Objetivo" as objetivo {
+  *id : number <<PK>>
+  --
+  *disciplina_id : number <<FK>>
+  descricao : varchar(255)
+  alcancado : boolean
+}
+
+entity "PlanoAula" as plano {
+  *id : number <<PK>>
+  --
+  *disciplina_id : number <<FK>>
+  data : date
+  titulo : varchar(100)
+  objetivos : text
+  conteudos : text
+  status : varchar(50)
+  num_aulas : int
+}
+
+entity "Tarefa" as tarefa {
+  *id : number <<PK>>
+  --
+  *disciplina_id : number <<FK>>
+  plano_aula_id : number <<FK>>
+  nome : varchar(50)
+  descricao : text
+  prazo : date
+  status : varchar(50)
+}
+
+entity "Avaliacao" as avaliacao {
+  *id : number <<PK>>
+  --
+  *disciplina_id : number <<FK>>
+  plano_aula_id : number <<FK>>
+  tipo : varchar(50)
+  etapa : varchar(50)
+  status : varchar(50)
+  data : date
+  identificador : varchar(100)
+}
+
+' RELACIONAMENTOS
+
+user ||--|| professor : possui
+professor ||--|| recuperacao: gera
+professor ||--o{ token : gera
+
+user ||--o{ calendario : possui
+
+calendario ||--o{ data_importante : possui
+calendario ||--o{ periodo : possui
+calendario ||--o{ disciplina : possui
+
+user ||--o{ disciplina : cria
+
+disciplina ||--o{ ementa : possui
+disciplina ||--o{ objetivo : possui
+disciplina ||--o{ plano : possui
+disciplina ||--o{ tarefa : possui
+disciplina ||--o{ avaliacao : possui
+
+plano ||--o{ tarefa : gera
+plano ||--o{ avaliacao : possui
+plano ||--o{ ementa : aborda
+
+@enduml

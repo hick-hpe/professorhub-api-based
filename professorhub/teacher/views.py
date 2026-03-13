@@ -233,7 +233,13 @@ def validar_codigo_recuperacao_senha_view(request):
         codigo = request.POST.get('codigo')
 
         # verifica se existe o código associado àquele email
-        codigo_obj = CodigoRecuperacaoSenha.objects.filter(email=email, code=codigo)
+        professor = Professor.objects.filter(
+            user__email=email
+        ).first()
+        if not professor:
+            raise ProfessorNaoEncontradoError()
+            
+        codigo_obj = CodigoRecuperacaoSenha.objects.filter(professor=professor, code=codigo)
         if codigo_obj.exists():
             codigo_obj = codigo_obj.first()
             if not codigo_obj.codigo_expirou():

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from planner.models import Professor, TokenAtivacaoConta, CodigoRecuperacaoSenha
+from planner.models import Professor, TokenAtivacaoConta
 import secrets
 from teacher.errors.exceptions import (
     AuthError,

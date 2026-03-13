@@ -33,3 +33,7 @@ Layout:
 Bibliotecas para implementar depois:
 - django-crontab: agendar tarefas
 - django-axes: tentativas de login
+
+
+
+

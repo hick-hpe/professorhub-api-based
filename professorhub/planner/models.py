@@ -26,7 +26,7 @@ class TokenAtivacaoConta(models.Model):
 
 
 class CodigoRecuperacaoSenha(models.Model):
-    email = models.EmailField(max_length=30, blank=True)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True)
     code = models.CharField(max_length=6)
     data_criacao = models.DateTimeField(auto_now_add=True)
     tempo_max_minutos = 3 # -> 10

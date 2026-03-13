@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
-from planner.models import CodigoRecuperacaoSenha
+from planner.models import CodigoRecuperacaoSenha, Professor
 import random
-from teacher.errors.exceptions import UsuarioNaoEncontradoError
+from teacher.errors.exceptions import UsuarioNaoEncontradoError, ProfessorNaoEncontradoError
 from .email_service import enviar_email_para_recuperar_conta
 
 
@@ -25,8 +25,14 @@ def iniciar_recuperacao_conta(email):
     codigo = gerar_codigo()
 
     # salvar código
+    professor = Professor.objects.filter(
+        user__email=email
+    ).first()
+    if not professor:
+        raise ProfessorNaoEncontradoError()
+
     CodigoRecuperacaoSenha.objects.create(
-        email=email,
+        professor=professor,
         code=codigo
     )
 
