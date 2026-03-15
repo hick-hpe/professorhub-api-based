@@ -121,7 +121,7 @@ entity "Avaliacao" as avaliacao {
   identificador : varchar(100)
 }
 
-' RELACIONAMENTOS
+' relacionamentos
 
 user ||--|| professor : possui
 professor ||--|| recuperacao: gera

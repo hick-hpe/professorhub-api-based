@@ -11,14 +11,14 @@ Regra de negócio:
 ao diminuir a data dos calendários, pode afetar os planos de aulas da disciplina
 por ex: o calendario permite 40 aulas, mas ao diminuir, seria necessário "excluir" algumas aulas o que fazer?
 - se tentar alterar/diminuir calendario
-    - bloquear de dimnuir, para evitar "excluir" as aulas? SIM OK
+    - bloquear de diminuir, para evitar "excluir" as aulas? SIM OK
 
-Pontos adicionais:
+Pontos adicionais (Rever):
 - melhorar a aba 'eventos' do dashboard
     - pensar noq colocar
 - sabados letivos??
 - quando diminuir carga horaria, excluir por data ou id do plano de aula??
-
+- impedir de criar mais aulas se o calendario nao permitir
 
 Landing Page: OK
 - desativar temporariamente para arrumar (nao eh importante agr)
@@ -29,6 +29,7 @@ Layout:
 - adicionar 'templates/email/ativar_conta.html'
 - divergencia entre layouts
     - cards "disciplina" e "calendario"
+- como os campos 'objetivos' e 'ementa' estao em abas separads, excluir da aba 'configuracoes'
 
 Bibliotecas para implementar depois:
 - django-crontab: agendar tarefas
