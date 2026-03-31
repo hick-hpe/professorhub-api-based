@@ -14,23 +14,51 @@ Calendários
         <div class="col" style="max-width: 18rem;">
             <div class="card h-100 d-flex flex-column">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"><i class="bi bi-calendar"></i> {{ calendario.nome }}</h5>
+                    <h5 class="card-title border-bottom border-2 pb-3"><i class="bi bi-calendar"></i> {{ calendario.nome }}</h5>
+
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-calendar-range"></i>
+                        {{ calendario.data_inicio|date:'d/m/Y' }}
+                        -
+                        {{ calendario.data_fim|date:'d/m/Y' }}
+                    </p>
 
                     {% if proxima_data.data %}
-                        <p class="card-text flex-grow-1" style="max-height: 100px; overflow-y: auto;">
-                            <i class="bi bi-calendar-event"></i>
-                            <strong>Próxima data:</strong> {{ proxima_data.data|date:'d/m/Y' }} <br>
-                            <span class="text-muted">{{ proxima_data.detalhes }}</span>
-                        </p>
+                    <p class="card-text flex-grow-1" style="max-height: 100px; overflow-y: auto;">
+                        <i class="bi bi-calendar-event"></i>
+                        <strong>Próxima data:</strong> {{ proxima_data.data|date:'d/m/Y' }} <br>
+                        <span class="text-muted">{{ proxima_data.detalhes }}</span>
+                    </p>
                     {% else %}
-                        <p class="text-muted flex-grow-1" style="max-height: 100px; overflow-y: auto;">
-                            <i class="bi bi-info-circle"></i> Nenhuma data importante para os próximos dias.
-                        </p>
+                    <p class="text-muted flex-grow-1" style="max-height: 100px; overflow-y: auto;">
+                        <i class="bi bi-info-circle"></i> Nenhuma data importante para os próximos dias.
+                    </p>
                     {% endif %}
 
-                    <div class="mt-auto border-top border-2 pt-3 d-flex justify-content-end">
+                    <div class="mt-auto pt-3 d-flex justify-content-between align-items-center">
                         <a href="{% url 'calendario_detail' calendario.id %}" class="btn btn-primary">Acessar</a>
+
+                        <div class="dropdown">
+                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'calendario_detail' calendario.id %}">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </a>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item text-danger" data-bs-toggle="modal"
+                                        data-bs-target="#modalExcluir" data-nome="{{ calendario.nome }}"
+                                        data-url="{% url 'calendario_delete' calendario.id %}">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -80,5 +108,33 @@ Calendários
             </div>
         </div>
     </div>
-    {% endblock %}
-    
+</div>
+
+<!-- excluir calendario -->
+<div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-id-calendario="{{ calendario.id }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Excluir data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir o calendário <strong id="calendario_excluir"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="#" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static '/js/listar_calendarios.js' %}"></script>
+{% endblock %}
+

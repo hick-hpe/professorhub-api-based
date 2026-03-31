@@ -91,6 +91,15 @@ def criar_aviso_se_faltar_aulas(disciplina):
         disciplina.aviso = ''
         disciplina.save()
 
+
+# AJAX: GET disciplinas do usuário
+def disciplinas_api_view(request):
+    disciplinas = Disciplina.objects.filter(user=request.user)
+    return JsonResponse({
+        'disciplinas': list(disciplinas.values('id', 'nome'))
+    })
+
+
 # CRUD Disciplinas: GET/POST
 @login_required(login_url='/login/')
 @transaction.atomic

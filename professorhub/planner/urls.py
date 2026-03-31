@@ -23,6 +23,7 @@ urlpatterns = [
     path('avaliacoes/', avaliacoes_view, name='avaliacoes'),
 
     # # disciplinas
+    path('api/disciplinas/', disciplinas_api_view, name='disciplinas_api'),
     path('disciplinas/<int:id>/delete', disciplina_delete, name='disciplina_delete'),
     path('disciplinas/', disciplinas_view, name='disciplinas'),
 
