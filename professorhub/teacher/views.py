@@ -1,6 +1,5 @@
-import secrets
 from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from planner.models import Professor, CodigoRecuperacaoSenha, TokenAtivacaoConta
@@ -27,42 +26,36 @@ from teacher.errors.exceptions import (
 )
 
 
+# views de autenticação, registro, ativação de conta e recuperação de senha
 def submit_login_view(request):
 
     if request.method == 'POST':
-
         email = request.POST.get('loginEmail')
         senha = request.POST.get('loginPassword')
 
         try:
-
             user = fazer_login_usuario(email, senha)
-
             login(request, user)
-
             return redirect('admin_dashboard')
 
         except AuthError as e:
-
             messages.error(request, str(e))
             return redirect("submit_login")
 
     return render(request, 'teacher/login.html')
 
 
+# view para registrar um novo usuário (professor)
 def submit_register_view(request):
 
     if request.method == 'POST':
-
         nome = request.POST.get('registerName')
         senha = request.POST.get('registerPassword')
         confirm_senha = request.POST.get('confirmPassword')
         email = request.POST.get('registerEmail')
 
         try:
-
             user = registrar_usuario(nome, email, senha, confirm_senha)
-
             login(request, user)
 
             try:
@@ -73,19 +66,20 @@ def submit_register_view(request):
             return redirect('enviar_email_verificacao_view')
 
         except AuthError as e:
-
             messages.error(request, str(e))
             return redirect('submit_register')
 
     return render(request, 'teacher/register.html')
 
 
+# view para logout do usuário
 def logout_view(request):
     logout(request)
     messages.success(request, "Você saiu da sua conta com sucesso.")
     return redirect('index') 
 
 
+# view para exibir página de aviso para verificar o email após registro e para reenviar email de ativação de conta
 @login_required(login_url='index')
 def enviar_email_verificacao_view(request):
     """
@@ -94,15 +88,14 @@ def enviar_email_verificacao_view(request):
     return render(request, 'teacher/ativar_conta.html', {'user': request.user})
 
 
+# view para ativar a conta do usuário ao clicar no link do email de ativação
 @transaction.atomic
 def ativar_conta_view(request):
 
     token = request.GET.get("token")
 
     try:
-
         professor = ativar_conta_por_token(token)
-
         return render(request, "teacher/conta_ativada.html", {
             "professor": professor
         })
@@ -126,6 +119,7 @@ def ativar_conta_view(request):
         return HttpResponse("Professor não encontrado.", status=404)
 
 
+# enviar email de ativação de conta para o usuário
 def enviar_email_para_ativar_conta(request):
     # Cria o link para ativação
     link_base = request.build_absolute_uri(reverse('ativar_conta_view'))
@@ -178,6 +172,7 @@ def enviar_email_para_ativar_conta(request):
     msg.send(fail_silently=False)
 
 
+# reenviar email de ativação de conta para o usuário
 @login_required(login_url='index')
 def reenviar_email_verificacao_view(request):
     # reenviar email de ativação para o usuário
@@ -191,6 +186,7 @@ def reenviar_email_verificacao_view(request):
     return redirect('enviar_email_verificacao_view')
 
 
+# exibir página de aviso para verificar o email após registro e para reenviar email de ativação de conta
 def recuperar_senha_view(request):
 
     # zerar etapas
@@ -218,6 +214,7 @@ def recuperar_senha_view(request):
     return render(request, 'teacher/recuperar-senha.html')
 
 
+# validar o código de recuperação de senha enviado para o email do usuário
 def validar_codigo_recuperacao_senha_view(request):
     # se passsou pela etapa anterior, continua
     etapa_recuperar_senha = request.session.get('page_recuperar_senha')
@@ -257,6 +254,7 @@ def validar_codigo_recuperacao_senha_view(request):
     return render(request, 'teacher/validar-codigo.html')
 
 
+# redefinir senha do usuário após validar o código de recuperação de senha
 def redefinir_senha_view(request):
     etapa_recuperar_senha = request.session.get('page_recuperar_senha')
     etapa_validar_codigo = request.session.get('page_validar_codigo')
@@ -296,6 +294,7 @@ def redefinir_senha_view(request):
     return render(request, 'teacher/redefinir-senha.html')
 
 
+# view para exibir página de contato para enviar email de contato, feedback
 def enviar_email_form_contato_view(request):
     # enviar email de contato, feedback
     if request.method == "POST":

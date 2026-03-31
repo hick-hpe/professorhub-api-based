@@ -43,7 +43,3 @@ class TokenExpiradoError(AuthError):
         self.email = email
         super().__init__(message)
 
-
-
-
-
