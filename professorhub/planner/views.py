@@ -143,6 +143,11 @@ def disciplinas_view(request):
         disciplina = form.save(commit=False)
         disciplina.user = request.user
 
+        # nome da disciplinas nao pode ser muito extenso
+        if len(disciplina.nome) > 50:
+            messages.error(request, 'O nome da disciplina não pode exceder 50 caracteres.')
+            return _render_page()
+
         # evitar disciplinas com mesmo nome
         minhas_disciplinas = Disciplina.objects.filter(user=request.user)
         nomes_disciplinas_banco = set([d.nome.lower() for d in minhas_disciplinas])
@@ -150,33 +155,34 @@ def disciplinas_view(request):
             messages.error(request, 'Não é possível cadastrar disciplinas com mesmo nome!')
             return _render_page()
 
-        # calendário
+        # verificar se calendário foi selecionado
         calendario_pk = data.get('calendario')
         if not calendario_pk:
             messages.error(request, 'Por favor, selecione um calendário letivo.')
             return _render_page()
 
+        # obter calendário selecionado e validar se pertence ao usuário
         calendario = CalendarioLetivo.objects.filter(pk=calendario_pk, user=request.user).first()
         if not calendario:
             messages.error(request, 'Calendário letivo não encontrado ou sem permissão.')
             return _render_page()
 
-        # dias selecionados
+        # validar dias da semana selecionados 
         dias = set(request.POST.getlist('dias[]'))
         if not dias:
             messages.error(request, 'Selecione ao menos um dia da semana para as aulas.')
             return _render_page()
 
-        # número de aulas por dia
+        # validar o número de aulas por dia
         dias_aulas = {}
         for dia in dias:
             num_aulas = data.get(f'aulas_{dia}')
             try:
                 num = int(num_aulas)
-                if num <= 0 or num > 10:
+                if not (1 <= num <= 6):
                     raise ValueError()
             except Exception:
-                messages.error(request, f'Por favor, informe um número válido de aulas para {dia}.')
+                messages.error(request, f'Por favor, informe um número válido de aulas [1-6] para {dia}.')
                 return _render_page()
             dias_aulas[dia] = num
 
@@ -459,10 +465,11 @@ def disciplina_configuracoes(request, id):
             ch_atual = disciplina.carga_horaria
             carga_diff = ch_atual - ch_antiga
             data_inicial = timezone.localdate()
+
             # mudar a partir de hoje, se e somente se "data_inicial" estiver no intervalo das datas
             if data_inicial < disciplina.calendario.data_inicio:
                 data_inicial = disciplina.calendario.data_inicio
-            # data_inicial > disciplina.calendario.data_fim:
+
             ch_atualizada = carga_diff
             disciplina.save()
 
@@ -1765,7 +1772,3 @@ def evento_calendario_reajustar_datas_aulas_do_dia(
 
 #             # mudar as datas
 #             pass
-
-
-
-

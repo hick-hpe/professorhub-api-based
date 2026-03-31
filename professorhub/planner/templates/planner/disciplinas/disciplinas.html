@@ -8,7 +8,7 @@ Disciplinas
 {% endblock %}
 
 {% block content %}
-<div class="container m-1 mt-4 position-relative">
+<div class="container mt-4">
 
     {% for message in messages %}
         {% if message.tags == "error" %}
@@ -87,7 +87,7 @@ Disciplinas
     <i class="bi bi-plus fs-3"></i>
 </button>
 
-<!-- adicionarDisciplina -->
+<!-- modal adicionar disciplina -->
 <div class="modal fade" id="adicionarDisciplina" tabindex="-1" aria-labelledby="adicionarDisciplinaLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -110,7 +110,7 @@ Disciplinas
                     <div class="mb-3">
                         <label for="nome">Nome</label><br>
                         <input type="text" class="form-control" id="nome"
-                            name="nome">
+                            name="nome" maxlength="50" placeholder="Ex: Matematica I" required>
                     </div>
 
                     <!-- carga horaria -->
@@ -118,7 +118,10 @@ Disciplinas
                         <label for="carga_horaria">Carga horária</label><br>
                         <input type="number" class="form-control"
                             id="carga_horaria"
-                            name="carga_horaria" max="200" min="1">
+                            name="carga_horaria"
+                            max="200" min="1"
+                            oninput="if (this.value.length > 3) this.value = this.value.slice(0, 3);"
+                            placeholder="Ex: 100" required>
                     </div>
 
                     <!-- qtd aulas por dia -->
@@ -137,7 +140,7 @@ Disciplinas
                             </div>
                             <input type="number" class="form-control"
                                 name="aulas_segunda" id="aulas_segunda"
-                                placeholder="ex: 2" max="10" min="1" disabled>
+                                placeholder="Ex: 2" max="6" min="1" disabled>
                         </div>
 
                         <!-- Terça -->
@@ -152,7 +155,7 @@ Disciplinas
                             </div>
                             <input type="number" class="form-control"
                                 name="aulas_terca" id="aulas_terca"
-                                placeholder="ex: 2" max="10" min="1" disabled>
+                                placeholder="Ex: 2" max="6" min="1" disabled>
                         </div>
 
                         <!-- Quarta -->
@@ -167,7 +170,7 @@ Disciplinas
                             </div>
                             <input type="number" class="form-control"
                                 name="aulas_quarta" id="aulas_quarta"
-                                placeholder="ex: 2" max="10" min="1" disabled>
+                                placeholder="Ex: 2" max="6" min="1" disabled>
                         </div>
 
                         <!-- Quinta -->
@@ -182,7 +185,7 @@ Disciplinas
                             </div>
                             <input type="number" class="form-control"
                                 name="aulas_quinta" id="aulas_quinta"
-                                placeholder="ex: 2" max="10" min="1" disabled>
+                                placeholder="Ex: 2" max="6" min="1" disabled>
                         </div>
 
                         <!-- Sexta -->
@@ -197,17 +200,15 @@ Disciplinas
                             </div>
                             <input type="number" class="form-control"
                                 name="aulas_sexta" id="aulas_sexta"
-                                placeholder="ex: 2" max="10" min="1" disabled>
+                                placeholder="Ex: 2" max="6" min="1" disabled>
                         </div>
                     </div>
 
                     <!-- periodo -->
                     <div class="mb-3">
                         <label for="periodo">Período</label>
-                        <select class="form-select" name="periodo" id="periodo"
-                            required>
-                            <option value selected disabled>Selecione o
-                                período</option>
+                        <select class="form-select" name="periodo" id="periodo" required>
+                            <option value selected disabled>Selecione o período</option>
                             <option value="semestral">Semestral</option>
                             <option value="anual">Anual</option>
                         </select>
@@ -216,8 +217,7 @@ Disciplinas
                     <!-- calendario -->
                     <div class="mb-3">
                         <label for="calendario">Calendário</label>
-                        <select class="form-select" name="calendario"
-                            id="calendario">
+                        <select class="form-select" name="calendario" id="calendario" required>
                             <option value selected disabled>Selecione o calendário</option>
                             {% for calendario in calendarios %}
                             <option value="{{ calendario.pk }}">{{calendario.nome }}</option>
