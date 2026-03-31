@@ -64,18 +64,6 @@ Disciplinas
         </div>
 
         <div class="mb-3">
-            <label for="objetivo">Objetivo</label><br>
-            <textarea class="form-control" id="objetivo" name="objetivo" rows="5"
-                style="resize: none;">{{ disciplina.objetivo }}</textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="ementa">Ementa</label><br>
-            <textarea class="form-control" id="ementa" name="ementa" rows="5"
-                style="resize: none;">{{ disciplina.ementa }}</textarea>
-        </div>
-
-        <div class="mb-3">
             <label>Dias das aulas e quantidade de aulas por dia</label>
             {% for dia, aula in dias %}
             <div class="d-flex align-items-center gap-3 mt-2">

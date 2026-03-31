@@ -436,6 +436,8 @@ def disciplina_planos_duplicar(request, id, plano_id):
 @login_required(login_url='/login/')
 def disciplina_configuracoes(request, id):
 
+    print('>_ disciplina_configuracoes')
+
     disciplina = get_object_or_404(Disciplina, id=id, user=request.user)
      
     if request.method == 'POST':
@@ -513,8 +515,11 @@ def disciplina_configuracoes(request, id):
                 else:
                     ch_atualizada = ch_atual
                 
+            print('>_ config - gerar_aulas')
             gerar_aulas(disciplina, ch_atualizada, dias_aulas, data_inicial=data_inicial)
+
         else:
+            print('>_ config - form inválido')
             print(form.errors)
 
     dias = {

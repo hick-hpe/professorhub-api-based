@@ -120,7 +120,8 @@ Calendários
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Tem certeza que deseja excluir o calendário <strong id="calendario_excluir"></strong>?
+                <div>Tem certeza que deseja excluir o calendário <strong id="calendario_excluir"></strong>?</div>
+                <div class="text-muted"><i class="bi bi-info-circle"></i> Caso tenha disciplinas e aulas associadas, elas também serão excluídas.</div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -137,4 +138,3 @@ Calendários
 {% block scripts %}
 <script src="{% static '/js/listar_calendarios.js' %}"></script>
 {% endblock %}
-
